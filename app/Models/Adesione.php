@@ -38,6 +38,7 @@ class Adesione extends Model
                 $adesione->codice_tessera = static::generaCodiceTessera();
             }
         });
+
     }
 
     public function socio(): BelongsTo

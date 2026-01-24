@@ -23,7 +23,7 @@ enum StatoAdesione: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::Attiva => 'success',
-            self::Scaduta => 'critical',
+            self::Scaduta => 'danger',
         };
     }
 

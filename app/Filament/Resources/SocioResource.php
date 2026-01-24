@@ -15,6 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -37,6 +38,8 @@ class SocioResource extends Resource
         return $schema
             ->components([
                 Section::make()
+                    ->columnSpanFull()
+
                     ->schema([
                         TextInput::make('nome')
                             ->required()
@@ -50,7 +53,10 @@ class SocioResource extends Resource
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
                     ])
-                    ->columns(1),
+                    ->columns([
+                        'sm' => 1,
+                        'lg' => 3,
+                    ]),
             ]);
     }
 
@@ -60,15 +66,16 @@ class SocioResource extends Resource
             ->columns([
                 TextColumn::make('nome')
                     ->searchable()
-                    ->sortable(),
-                TextColumn::make('cognome')
-                    ->searchable()
-                    ->sortable(),
+                    ->color('primary')
+                    ->weight(FontWeight::Bold)
+                    ->formatStateUsing(fn($record): string => $record->cognome . ', ' . $record->nome)
+                    ->sortable(['nome', 'cognome']),
                 TextColumn::make('email')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
                 TextColumn::make('adesioni_count')
                     ->label('Adesioni')
+                    ->badge()
+                    ->alignCenter()
                     ->counts('adesioni')
                     ->sortable(),
                 TextColumn::make('created_at')
@@ -77,11 +84,8 @@ class SocioResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('cognome')
-            ->recordAction('edit')
-            ->recordUrl(null)
             ->recordActions([
-                EditAction::make()
-                    ->slideOver(),
+                EditAction::make(),
                 DeleteAction::make(),
             ])
             ->groupedBulkActions([

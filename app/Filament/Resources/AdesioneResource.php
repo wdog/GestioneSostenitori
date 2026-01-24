@@ -2,31 +2,34 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\StatoAdesione;
-use App\Filament\Resources\AdesioneResource\Pages\CreateAdesione;
-use App\Filament\Resources\AdesioneResource\Pages\EditAdesione;
-use App\Filament\Resources\AdesioneResource\Pages\ListAdesioni;
-use App\Mail\TesseraInviata;
-use App\Models\Adesione;
-use App\Models\Livello;
-use App\Models\Socio;
-use App\Services\TesseraPdfService;
 use BackedEnum;
+use App\Models\Socio;
+use App\Models\Livello;
+use App\Models\Adesione;
+use Filament\Tables\Table;
+use App\Enums\StatoAdesione;
+use App\Mail\TesseraInviata;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\DatePicker;
+use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
+use App\Services\TesseraPdfService;
+use Illuminate\Support\Facades\Mail;
 use Filament\Forms\Components\Select;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Schemas\Components\Utilities\Get;
+use App\Filament\Resources\AdesioneResource\Pages\EditAdesione;
+use App\Filament\Resources\AdesioneResource\Pages\ListAdesioni;
+use App\Filament\Resources\AdesioneResource\Pages\CreateAdesione;
 
 class AdesioneResource extends Resource
 {
@@ -45,13 +48,20 @@ class AdesioneResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+
             ->components([
                 Section::make()
+                    ->columnSpanFull()
                     ->schema([
                         Select::make('socio_id')
                             ->label('Socio')
-                            ->options(Socio::query()->get()->mapWithKeys(fn ($s) => [$s->id => "{$s->cognome} {$s->nome}"]))
-                            ->searchable()
+                            ->relationship(
+                                name: 'socio',
+                                modifyQueryUsing: fn(Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
+                            )
+                            ->getOptionLabelFromRecordUsing(fn(Socio $record) => "{$record->cognome}, {$record->nome}")
+                            ->searchable(['cognome', 'nome'])
+                            ->preload()
                             ->required()
                             ->createOptionForm([
                                 TextInput::make('nome')
@@ -78,6 +88,12 @@ class AdesioneResource extends Resource
                             ->numeric()
                             ->default(date('Y'))
                             ->required()
+                            ->unique(
+                                table: Adesione::class,
+                                ignoreRecord: true, // Ignora il record corrente in edit
+                                modifyRuleUsing: fn(Unique $rule, Get $get) => $rule
+                                    ->where('socio_id', $get('socio_id'))
+                            )
                             ->minValue(2000)
                             ->maxValue(2100),
                         DatePicker::make('data_adesione')
@@ -91,7 +107,10 @@ class AdesioneResource extends Resource
                             ->default(StatoAdesione::Attiva->value)
                             ->required(),
                     ])
-                    ->columns(1),
+                    ->columns([
+                        'sm' => 2,
+                        'lg' => 3,
+                    ]),
             ]);
     }
 
@@ -108,7 +127,8 @@ class AdesioneResource extends Resource
                     ->weight('bold'),
                 TextColumn::make('socio.full_name')
                     ->label('Socio')
-                    ->searchable(['socio.nome', 'socio.cognome'])
+                    // ->searchable(['socio.nome', 'socio.cognome'])
+                    ->searchable(['nome', 'cognome'])
                     ->sortable(['socio.cognome', 'socio.nome']),
                 TextColumn::make('livello.nome')
                     ->label('Livello')
@@ -134,7 +154,7 @@ class AdesioneResource extends Resource
             ->filters([
                 SelectFilter::make('anno')
                     ->options(
-                        fn () => Adesione::query()
+                        fn() => Adesione::query()
                             ->distinct()
                             ->pluck('anno', 'anno')
                             ->sortDesc()
@@ -145,12 +165,12 @@ class AdesioneResource extends Resource
                     ->label('Livello')
                     ->relationship('livello', 'nome'),
                 SelectFilter::make('stato')
-                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn ($s) => [$s->value => $s->getLabel()])),
+                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn($s) => [$s->value => $s->getLabel()])),
             ])
             ->filtersFormColumns(3)
             ->persistFiltersInSession()
-            ->recordAction('edit')
-            ->recordUrl(null)
+            // ->recordAction('edit')
+            // ->recordUrl(null)
             ->recordActions([
                 Action::make('scarica_pdf')
                     ->label('PDF')
@@ -184,8 +204,7 @@ class AdesioneResource extends Resource
                             ->success()
                             ->send();
                     }),
-                EditAction::make()
-                    ->slideOver(),
+                EditAction::make(),
                 DeleteAction::make(),
             ])
             ->groupedBulkActions([
