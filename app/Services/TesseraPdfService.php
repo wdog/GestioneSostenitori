@@ -72,7 +72,7 @@ class TesseraPdfService
 
     public function getPath(Adesione $adesione): ?string
     {
-        if (!$adesione->tessera_path) {
+        if (! $adesione->tessera_path) {
             return null;
         }
 

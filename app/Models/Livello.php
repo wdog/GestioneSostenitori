@@ -17,8 +17,13 @@ class Livello extends Model
         'color_primary',
         'color_secondary',
         'color_accent',
-        'color_label'
+        'color_label',
     ];
+
+    public function adesioni(): HasMany
+    {
+        return $this->hasMany(Adesione::class);
+    }
 
     protected function casts(): array
     {
@@ -26,10 +31,5 @@ class Livello extends Model
             'importo_suggerito' => 'decimal:2',
             'is_active' => 'boolean',
         ];
-    }
-
-    public function adesioni(): HasMany
-    {
-        return $this->hasMany(Adesione::class);
     }
 }

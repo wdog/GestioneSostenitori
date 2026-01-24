@@ -26,9 +26,9 @@ class Impostazioni extends Page implements HasForms
 
     protected static ?int $navigationSort = 99;
 
-    protected string $view = 'filament.pages.impostazioni';
-
     public ?array $data = [];
+
+    protected string $view = 'filament.pages.impostazioni';
 
     public function mount(): void
     {
@@ -63,15 +63,6 @@ class Impostazioni extends Page implements HasForms
             ->statePath('data');
     }
 
-    protected function getFormActions(): array
-    {
-        return [
-            Action::make('save')
-                ->label('Salva Impostazioni')
-                ->submit('save'),
-        ];
-    }
-
     public function save(): void
     {
         $data = $this->form->getState();
@@ -83,5 +74,14 @@ class Impostazioni extends Page implements HasForms
             ->title('Impostazioni salvate')
             ->success()
             ->send();
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label('Salva Impostazioni')
+                ->submit('save'),
+        ];
     }
 }

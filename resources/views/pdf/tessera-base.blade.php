@@ -136,7 +136,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="label">Codice Socio</div>
+                            <div class="label">Codice</div>
                             <div class="value code">
                                 {{ $socio['codice'] }}
                             </div>

@@ -8,7 +8,6 @@ use App\Models\Livello;
 use App\Models\Socio;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class DemoDataSeeder extends Seeder
 {
@@ -95,7 +94,7 @@ class DemoDataSeeder extends Seeder
             }
         }
 
-        $this->command->info("Creati 100 soci, di cui 90 con adesioni per gli anni 2020-2025");
-        $this->command->info("Totale adesioni create: " . Adesione::count());
+        $this->command->info('Creati 100 soci, di cui 90 con adesioni per gli anni 2020-2025');
+        $this->command->info('Totale adesioni create: ' . Adesione::count());
     }
 }

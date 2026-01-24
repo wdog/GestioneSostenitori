@@ -22,14 +22,13 @@ class Adesione extends Model
         'tessera_path',
     ];
 
-    protected function casts(): array
+    public static function generaCodiceTessera(): string
     {
-        return [
-            'anno' => 'integer',
-            'data_adesione' => 'date',
-            'data_scadenza' => 'date',
-            'stato' => StatoAdesione::class,
-        ];
+        do {
+            $codice = strtoupper(Str::random(5));
+        } while (static::where('codice_tessera', $codice)->exists());
+
+        return $codice;
     }
 
     protected static function booted(): void
@@ -41,15 +40,6 @@ class Adesione extends Model
         });
     }
 
-    public static function generaCodiceTessera(): string
-    {
-        do {
-            $codice = strtoupper(Str::random(5));
-        } while (static::where('codice_tessera', $codice)->exists());
-
-        return $codice;
-    }
-
     public function socio(): BelongsTo
     {
         return $this->belongsTo(Socio::class);
@@ -58,5 +48,15 @@ class Adesione extends Model
     public function livello(): BelongsTo
     {
         return $this->belongsTo(Livello::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'anno' => 'integer',
+            'data_adesione' => 'date',
+            'data_scadenza' => 'date',
+            'stato' => StatoAdesione::class,
+        ];
     }
 }

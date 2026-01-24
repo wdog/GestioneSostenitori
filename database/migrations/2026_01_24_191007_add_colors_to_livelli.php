@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('livelli', function (Blueprint $table) {
@@ -19,9 +16,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('livelli', function (Blueprint $table) {
@@ -29,7 +23,7 @@ return new class extends Migration
                 'color_primary',
                 'color_secondary',
                 'color_accent',
-                'color_label'
+                'color_label',
             ]);
         });
     }

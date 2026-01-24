@@ -2,27 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use BackedEnum;
+use App\Filament\Resources\SocioResource\Pages\CreateSocio;
+use App\Filament\Resources\SocioResource\Pages\EditSocio;
+use App\Filament\Resources\SocioResource\Pages\ListSoci;
+use App\Filament\Resources\SocioResource\RelationManagers\AdesioniRelationManager;
 use App\Models\Socio;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
-use Filament\Resources\Resource;
+use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
-use App\Filament\Resources\SocioResource\Pages\ListSoci;
-use App\Filament\Resources\SocioResource\Pages\EditSocio;
-use App\Filament\Resources\SocioResource\Pages\CreateSocio;
-use App\Filament\Resources\SocioResource\RelationManagers\AdesioniRelationManager;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class SocioResource extends Resource
 {
     protected static ?string $model = Socio::class;
 
-    protected static  BackedEnum|string|null $navigationIcon = 'heroicon-o-users';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $navigationLabel = 'Soci';
 

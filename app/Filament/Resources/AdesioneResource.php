@@ -2,39 +2,37 @@
 
 namespace App\Filament\Resources;
 
-
-use BackedEnum;
-use App\Models\Socio;
-use App\Models\Livello;
-use App\Models\Adesione;
-use Filament\Tables\Table;
 use App\Enums\StatoAdesione;
-use App\Mail\TesseraInviata;
-use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
-use Filament\Resources\Resource;
-use Filament\Actions\DeleteAction;
-use App\Services\TesseraPdfService;
-use Illuminate\Support\Facades\Mail;
-use Filament\Forms\Components\Select;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Filters\SelectFilter;
+use App\Filament\Resources\AdesioneResource\Pages\CreateAdesione;
 use App\Filament\Resources\AdesioneResource\Pages\EditAdesione;
 use App\Filament\Resources\AdesioneResource\Pages\ListAdesioni;
-use App\Filament\Resources\AdesioneResource\Pages\CreateAdesione;
-
+use App\Mail\TesseraInviata;
+use App\Models\Adesione;
+use App\Models\Livello;
+use App\Models\Socio;
+use App\Services\TesseraPdfService;
+use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Support\Facades\Mail;
 
 class AdesioneResource extends Resource
 {
     protected static ?string $model = Adesione::class;
 
-    protected static  BackedEnum |string|null $navigationIcon = 'heroicon-o-document-text';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $navigationLabel = 'Adesioni';
 
@@ -52,7 +50,7 @@ class AdesioneResource extends Resource
                     ->schema([
                         Select::make('socio_id')
                             ->label('Socio')
-                            ->options(Socio::query()->get()->mapWithKeys(fn($s) => [$s->id => "{$s->cognome} {$s->nome}"]))
+                            ->options(Socio::query()->get()->mapWithKeys(fn ($s) => [$s->id => "{$s->cognome} {$s->nome}"]))
                             ->searchable()
                             ->required()
                             ->createOptionForm([
@@ -89,7 +87,7 @@ class AdesioneResource extends Resource
                             ->default(now()->endOfYear())
                             ->required(),
                         Select::make('stato')
-                            ->options(collect(StatoAdesione::cases())->mapWithKeys(fn($s) => [$s->value => $s->label()]))
+                            ->options(StatoAdesione::class)
                             ->default(StatoAdesione::Attiva->value)
                             ->required(),
                     ])
@@ -115,13 +113,14 @@ class AdesioneResource extends Resource
                 TextColumn::make('livello.nome')
                     ->label('Livello')
                     ->badge()
+                    ->color(function ($record) {
+                        // TODO
+                    })
                     ->sortable(),
                 TextColumn::make('anno')
                     ->sortable(),
                 TextColumn::make('stato')
-                    ->badge()
-                    ->color(fn(StatoAdesione $state): string => $state->color())
-                    ->formatStateUsing(fn(StatoAdesione $state): string => $state->label()),
+                    ->badge(),
                 TextColumn::make('data_adesione')
                     ->date('d/m/Y')
                     ->sortable()
@@ -135,7 +134,7 @@ class AdesioneResource extends Resource
             ->filters([
                 SelectFilter::make('anno')
                     ->options(
-                        fn() => Adesione::query()
+                        fn () => Adesione::query()
                             ->distinct()
                             ->pluck('anno', 'anno')
                             ->sortDesc()
@@ -146,7 +145,7 @@ class AdesioneResource extends Resource
                     ->label('Livello')
                     ->relationship('livello', 'nome'),
                 SelectFilter::make('stato')
-                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn($s) => [$s->value => $s->label()])),
+                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn ($s) => [$s->value => $s->getLabel()])),
             ])
             ->filtersFormColumns(3)
             ->persistFiltersInSession()
@@ -159,6 +158,7 @@ class AdesioneResource extends Resource
                     ->color('info')
                     ->action(function (Adesione $record) {
                         $service = app(TesseraPdfService::class);
+
                         return $service->download($record);
                     }),
                 Action::make('invia_email')
@@ -171,7 +171,7 @@ class AdesioneResource extends Resource
                     ->action(function (Adesione $record) {
                         $service = app(TesseraPdfService::class);
 
-                        if (!$record->tessera_path) {
+                        if (! $record->tessera_path) {
                             $service->genera($record);
                             $record->refresh();
                         }

@@ -16,9 +16,7 @@ class TesseraInviata extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public function __construct(
-        public Adesione $adesione
-    ) {}
+    public function __construct(public Adesione $adesione) {}
 
     public function envelope(): Envelope
     {
@@ -41,13 +39,13 @@ class TesseraInviata extends Mailable implements ShouldQueue
 
     public function attachments(): array
     {
-        if (!$this->adesione->tessera_path) {
+        if (! $this->adesione->tessera_path) {
             return [];
         }
 
         $path = Storage::disk('public')->path($this->adesione->tessera_path);
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             return [];
         }
 

@@ -2,12 +2,16 @@
 
 namespace App\Enums;
 
-enum StatoAdesione: string
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasIcon;
+use Filament\Support\Contracts\HasLabel;
+
+enum StatoAdesione: string implements HasColor, HasIcon, HasLabel
 {
     case Attiva = 'attiva';
     case Scaduta = 'scaduta';
 
-    public function label(): string
+    public function getLabel(): string
     {
         return match ($this) {
             self::Attiva => 'Attiva',
@@ -15,11 +19,19 @@ enum StatoAdesione: string
         };
     }
 
-    public function color(): string
+    public function getColor(): string
     {
         return match ($this) {
             self::Attiva => 'success',
-            self::Scaduta => 'danger',
+            self::Scaduta => 'critical',
+        };
+    }
+
+    public function getIcon(): string
+    {
+        return match ($this) {
+            self::Attiva => 'heroicon-s-check-circle',
+            self::Scaduta => 'heroicon-s-x-circle',
         };
     }
 }
