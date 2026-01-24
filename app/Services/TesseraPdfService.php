@@ -20,6 +20,8 @@ class TesseraPdfService
         if ($logoPath && Storage::disk('public')->exists($logoPath)) {
             $logoUrl = Storage::disk('public')->path($logoPath);
         }
+        // dd($adesione->livello->toArray());
+
         $pdf = Pdf::loadView($template, [
             'adesione' => $adesione,
             'socio' => [
@@ -35,6 +37,12 @@ class TesseraPdfService
             'nomeAssociazione' => Impostazione::getNomeAssociazione(),
             'logoPath' => $logoPath,
             'logoUrl' => $logoUrl,
+            'palette' => [
+                'primary' => $adesione->livello->color_primary,       // fasce
+                'secondary' => $adesione->livello->color_secondary,     // sfondo tessera
+                'accent' => $adesione->livello->color_accent,        // badge/elementi evidenziati
+                'label' => $adesione->livello->color_label,         // label secondarie
+            ],
         ]);
 
         // 85.6mm x 54mm in points (1mm = 2.83465 points)
@@ -75,9 +83,6 @@ class TesseraPdfService
     {
         $templates = [
             'base' => 'pdf.tessera-base',
-            'pro' => 'pdf.tessera-pro',
-            'avanzato' => 'pdf.tessera-avanzato',
-            'eterno' => 'pdf.tessera-eterno',
         ];
 
         return $templates[$livelloSlug] ?? 'pdf.tessera-base';

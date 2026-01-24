@@ -14,6 +14,10 @@ class Livello extends Model
         'descrizione',
         'importo_suggerito',
         'is_active',
+        'color_primary',
+        'color_secondary',
+        'color_accent',
+        'color_label'
     ];
 
     protected function casts(): array

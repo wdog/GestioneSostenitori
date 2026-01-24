@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use BackedEnum;
 use App\Models\Livello;
 use Filament\Tables\Table;
+use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Resources\Resource;
@@ -16,9 +17,12 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Tables\Filters\TernaryFilter;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use App\Filament\Resources\LivelloResource\Pages;
-
 
 class LivelloResource extends Resource
 {
@@ -55,7 +59,27 @@ class LivelloResource extends Resource
                             ->label('Attivo')
                             ->default(true),
                     ])
+
                     ->columns(1),
+                Section::make('colors')->schema([
+                    ColorPicker::make('color_primary')
+                        ->required()
+                        ->placeholder('#6d28d9'),
+                    ColorPicker::make('color_secondary')
+                        ->required()
+                        ->placeholder('#f3f4f6'),
+                    ColorPicker::make('color_accent')
+                        ->required()
+                        ->placeholder('#1e40af'),
+                    ColorPicker::make('color_label')
+                        ->required()
+                        ->placeholder('#1e40af'),
+                    Action::make('genera')
+                        ->label('Genera Colori')
+                        ->action(function (Get $get, Set $set) {
+                            dd('x');
+                        })
+                ])
             ]);
     }
 
@@ -76,6 +100,11 @@ class LivelloResource extends Resource
                     ->label('Adesioni')
                     ->counts('adesioni')
                     ->sortable(),
+
+                ColorColumn::make('color_primary'),
+                ColorColumn::make('color_secondary'),
+                ColorColumn::make('color_accent'),
+                ColorColumn::make('color_label'),
             ])
             ->filters([
                 TernaryFilter::make('is_active')
