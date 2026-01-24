@@ -38,6 +38,11 @@ class AdesioniRelationManager extends RelationManager
                     ->options(Livello::query()->where('is_active', true)->pluck('nome', 'id'))
                     ->required()
                     ->searchable(),
+                TextInput::make('importo_versato')
+                    ->label('Importo Versato')
+                    ->numeric()
+                    ->prefix('€')
+                    ->step(0.01),
                 TextInput::make('anno')
                     ->numeric()
                     ->required()
@@ -73,6 +78,10 @@ class AdesioniRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('livello.nome')
                     ->label('Livello')
+                    ->sortable(),
+                TextColumn::make('importo_versato')
+                    ->label('Importo')
+                    ->money('EUR')
                     ->sortable(),
                 TextColumn::make('data_adesione')
                     ->label('Data Adesione')

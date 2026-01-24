@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -28,7 +29,7 @@ class Livello extends Model
     protected function casts(): array
     {
         return [
-            'importo_suggerito' => 'decimal:2',
+            'importo_suggerito' => MoneyCast::class,
             'is_active'         => 'boolean',
         ];
     }

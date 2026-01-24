@@ -84,6 +84,11 @@ class AdesioneResource extends Resource
                             ->options(Livello::where('is_active', true)->pluck('nome', 'id'))
                             ->searchable()
                             ->required(),
+                        TextInput::make('importo_versato')
+                            ->label('Importo Versato')
+                            ->numeric()
+                            ->prefix('€')
+                            ->step(0.01),
                         TextInput::make('anno')
                             ->numeric()
                             ->default(date('Y'))
@@ -136,6 +141,10 @@ class AdesioneResource extends Resource
                     ->color(function ($record) {
                         // TODO
                     })
+                    ->sortable(),
+                TextColumn::make('importo_versato')
+                    ->label('Importo')
+                    ->money('EUR')
                     ->sortable(),
                 TextColumn::make('anno')
                     ->sortable(),

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Support\Str;
 use App\Enums\StatoAdesione;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,7 @@ class Adesione extends Model
     protected $fillable = [
         'socio_id',
         'livello_id',
+        'importo_versato',
         'codice_tessera',
         'anno',
         'data_adesione',
@@ -53,10 +55,11 @@ class Adesione extends Model
     protected function casts(): array
     {
         return [
-            'anno'          => 'integer',
-            'data_adesione' => 'date',
-            'data_scadenza' => 'date',
-            'stato'         => StatoAdesione::class,
+            'anno'            => 'integer',
+            'importo_versato' => MoneyCast::class,
+            'data_adesione'   => 'date',
+            'data_scadenza'   => 'date',
+            'stato'           => StatoAdesione::class,
         ];
     }
 }
