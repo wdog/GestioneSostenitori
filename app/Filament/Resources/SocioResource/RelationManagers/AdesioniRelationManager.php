@@ -2,20 +2,23 @@
 
 namespace App\Filament\Resources\SocioResource\RelationManagers;
 
-use App\Enums\StatoAdesione;
 use App\Models\Livello;
+use App\Models\Adesione;
+use Filament\Tables\Table;
+use App\Enums\StatoAdesione;
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Validation\Rules\Unique;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class AdesioniRelationManager extends RelationManager
 {
@@ -37,8 +40,14 @@ class AdesioniRelationManager extends RelationManager
                     ->required()
                     ->searchable(),
                 TextInput::make('anno')
-                    ->required()
                     ->numeric()
+                    ->required()
+                    ->unique(
+                        table: Adesione::class,
+                        ignoreRecord: true, // Ignora il record corrente in edit
+                        modifyRuleUsing: fn(Unique $rule, $livewire, $state) =>
+                        $rule->where('socio_id', $livewire->ownerRecord->id)
+                    )
                     ->default(date('Y'))
                     ->minValue(2000)
                     ->maxValue(2078),
@@ -80,7 +89,7 @@ class AdesioniRelationManager extends RelationManager
             ])
             ->filters([
                 SelectFilter::make('anno')
-                    ->options(fn () => collect(range(date('Y'), 2020))->mapWithKeys(fn ($year) => [$year => $year])->toArray()),
+                    ->options(fn() => collect(range(date('Y'), 2020))->mapWithKeys(fn($year) => [$year => $year])->toArray()),
                 SelectFilter::make('stato')
                     ->options(StatoAdesione::class),
             ])

@@ -149,67 +149,39 @@ class LivelloResource extends Resource
 
     public static function generateRandPalette(): array
     {
-        // Lista di colori vibranti
-        $vibrantHex = [
-            '#ef4444',
-            '#f87171',  // Red tones
-            '#ec4899',
-            '#f472b6',  // Pink tones
-            '#a855f7',
-            '#c084fc',  // Violet tones
-            '#3b82f6',
-            '#60a5fa',  // Blue tones
-            '#10b981',
-            '#34d399',  // Green tones
-            '#f59e0b',
-            '#fbbf24',  // Amber tones
-            '#f97316',
-            '#fb923c',  // Orange tones
-            '#06b6d4',
-            '#0ea5e9',  // Cyan tones
-        ];
-
-        // Seleziona 3-4 colori diversi per creare una palette multicolore
-        $selectedColors = Arr::random($vibrantHex, 4);
-
-        // Genera varianti di ciascun colore
-        $data['primary'] = $selectedColors[0];
-        $data['secondary'] = self::lightenHex($selectedColors[0], 75); // Sfumatura leggera
-        $data['label'] = self::darkenHex($selectedColors[1], 35);      // Colore scuro
-        $data['accent'] = self::darkenHex($selectedColors[2], 40);     // Colore accentuato
-        $data['highlight'] = self::lightenHex($selectedColors[3], 50); // Colore evidenziatore
-
-        return $data;
-    }
-
-    private static function lightenHex(string $hex, int $percent): string
-    {
-        $rgb = self::hexToRgb($hex);
-        foreach ($rgb as &$c) {
-            $c = min(255, $c + ($percent * 255 / 100));
-        }
-
-        return '#' . sprintf('%02x%02x%02x', ...$rgb);
-    }
-
-    private static function darkenHex(string $hex, int $percent): string
-    {
-        $rgb = self::hexToRgb($hex);
-        foreach ($rgb as &$c) {
-            $c = max(0, $c - ($percent * 255 / 100));
-        }
-
-        return '#' . sprintf('%02x%02x%02x', ...$rgb);
-    }
-
-    private static function hexToRgb(string $hex): array
-    {
-        $hex = ltrim($hex, '#');
+        // Genera una tonalità casuale (0-360)
+        $hue = random_int(0, 360);
 
         return [
-            hexdec(substr($hex, 0, 2)),
-            hexdec(substr($hex, 2, 2)),
-            hexdec(substr($hex, 4, 2)),
+            'primary' => self::hslToHex($hue, 70, 50),      // Colore principale saturo
+            'secondary' => self::hslToHex($hue, 15, 96),    // Quasi bianco con leggera tinta
+            'accent' => self::hslToHex(($hue + 30) % 360, 80, 45),  // Accento complementare
+            'label' => self::hslToHex($hue, 60, 25),        // Scuro per testo
         ];
+    }
+
+    private static function hslToHex(int $h, int $s, int $l): string
+    {
+        $s /= 100;
+        $l /= 100;
+
+        $c = (1 - abs(2 * $l - 1)) * $s;
+        $x = $c * (1 - abs(fmod($h / 60, 2) - 1));
+        $m = $l - $c / 2;
+
+        match (true) {
+            $h < 60 => [$r, $g, $b] = [$c, $x, 0],
+            $h < 120 => [$r, $g, $b] = [$x, $c, 0],
+            $h < 180 => [$r, $g, $b] = [0, $c, $x],
+            $h < 240 => [$r, $g, $b] = [0, $x, $c],
+            $h < 300 => [$r, $g, $b] = [$x, 0, $c],
+            default => [$r, $g, $b] = [$c, 0, $x],
+        };
+
+        return sprintf('#%02x%02x%02x',
+            (int) (($r + $m) * 255),
+            (int) (($g + $m) * 255),
+            (int) (($b + $m) * 255)
+        );
     }
 }
