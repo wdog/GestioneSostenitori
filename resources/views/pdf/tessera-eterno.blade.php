@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
     <meta charset="UTF-8">
     <title>Tessera Socio</title>
 
     <style>
         @page {
-            size: 210mm 148mm;
-            /* A5 orizzontale per test */
+            size: 210mm 148mm; /* A5 orizzontale per test */
             margin: 0;
         }
 
@@ -19,12 +17,13 @@
             color: #111;
         }
 
+        /* contenitore per centratura PDF-safe */
+
         .card {
             width: 85.6mm;
             height: 54mm;
-            position: ;
-            margin: 40mm 50mm;
             padding: 0;
+            margin: 40mm 50mm;
             border-radius: 3mm;
             background: #ffffff;
             border: 1px solid #cfd6de;
@@ -90,57 +89,55 @@
         }
     </style>
 </head>
-
 <body>
 
-    <table class="page">
-        <tr>
-            <td align="center" valign="middle">
+<table class="page">
+    <tr>
+        <td align="center" valign="middle">
 
-                <div class="card">
+            <div class="card">
 
-                    {{-- HEADER --}}
-                    <div class="card-header">
-                        {{ $ente['nome'] ?? 'ASSOCIAZIONE SPORTIVA' }}
-                    </div>
-
-                    {{-- BODY --}}
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="label">Nome e Cognome</div>
-                            <div class="value">
-                                {{ $socio['nome'] }} {{ $socio['cognome'] }}
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="label">Codice Socio</div>
-                            <div class="value code">
-                                {{ $socio['codice'] }}
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="label">Anno di iscrizione</div>
-                            <div class="value">
-                                <span class="badge">
-                                    {{ $socio['anno_iscrizione'] }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- FOOTER --}}
-                    <div class="card-footer">
-                        Tessera personale – non cedibile
-                    </div>
-
+                {{-- HEADER --}}
+                <div class="card-header">
+                    {{ $ente['nome'] ?? 'ASSOCIAZIONE SPORTIVA' }}
                 </div>
 
-            </td>
-        </tr>
-    </table>
+                {{-- BODY --}}
+                <div class="card-body">
+                    <div class="row">
+                        <div class="label">Nome e Cognome</div>
+                        <div class="value">
+                            {{ $socio['nome'] }} {{ $socio['cognome'] }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="label">Codice Socio</div>
+                        <div class="value code">
+                            {{ $socio['codice'] }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="label">Anno di iscrizione</div>
+                        <div class="value">
+                            <span class="badge">
+                                {{ $socio['anno_iscrizione'] }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- FOOTER --}}
+                <div class="card-footer">
+                    Tessera personale – non cedibile
+                </div>
+
+            </div>
+
+        </td>
+    </tr>
+</table>
 
 </body>
-
 </html>
