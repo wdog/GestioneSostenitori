@@ -2,30 +2,28 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\LivelloResource\Pages\CreateLivello;
-use App\Filament\Resources\LivelloResource\Pages\EditLivello;
-use App\Filament\Resources\LivelloResource\Pages\ListLivelli;
-use App\Models\Livello;
 use BackedEnum;
+use App\Models\Livello;
+use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\ColorColumn;
+use Filament\Actions\EditAction;
+use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\Toggle;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Tables\Filters\TernaryFilter;
-use Filament\Tables\Table;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
+use Filament\Schemas\Components\Utilities\Set;
+use App\Filament\Resources\LivelloResource\Pages\EditLivello;
+use App\Filament\Resources\LivelloResource\Pages\ListLivelli;
+use App\Filament\Resources\LivelloResource\Pages\CreateLivello;
 
 class LivelloResource extends Resource
 {
@@ -81,10 +79,7 @@ class LivelloResource extends Resource
                     Action::make('genera')
                         ->label('Genera Colori')
                         ->action(function (Set $set) {
-
                             $colors = self::generateRandPalette();
-                            Log::debug($colors);
-                            // Set the form fields with generated colors
                             $set('color_primary', $colors['primary']);
                             $set('color_secondary', $colors['secondary']);
                             $set('color_label', $colors['label']);
@@ -141,9 +136,9 @@ class LivelloResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListLivelli::route('/'),
+            'index'  => ListLivelli::route('/'),
             'create' => CreateLivello::route('/create'),
-            'edit' => EditLivello::route('/{record}/edit'),
+            'edit'   => EditLivello::route('/{record}/edit'),
         ];
     }
 
@@ -153,10 +148,10 @@ class LivelloResource extends Resource
         $hue = random_int(0, 360);
 
         return [
-            'primary' => self::hslToHex($hue, 70, 50),      // Colore principale saturo
+            'primary'   => self::hslToHex($hue, 70, 50),      // Colore principale saturo
             'secondary' => self::hslToHex($hue, 15, 96),    // Quasi bianco con leggera tinta
-            'accent' => self::hslToHex(($hue + 30) % 360, 80, 45),  // Accento complementare
-            'label' => self::hslToHex($hue, 60, 25),        // Scuro per testo
+            'accent'    => self::hslToHex(($hue + 30) % 360, 80, 45),  // Accento complementare
+            'label'     => self::hslToHex($hue, 60, 25),        // Scuro per testo
         ];
     }
 
@@ -170,12 +165,12 @@ class LivelloResource extends Resource
         $m = $l - $c / 2;
 
         match (true) {
-            $h < 60 => [$r, $g, $b] = [$c, $x, 0],
+            $h < 60  => [$r, $g, $b] = [$c, $x, 0],
             $h < 120 => [$r, $g, $b] = [$x, $c, 0],
             $h < 180 => [$r, $g, $b] = [0, $c, $x],
             $h < 240 => [$r, $g, $b] = [0, $x, $c],
             $h < 300 => [$r, $g, $b] = [$x, 0, $c],
-            default => [$r, $g, $b] = [$c, 0, $x],
+            default  => [$r, $g, $b] = [$c, 0, $x],
         };
 
         return sprintf('#%02x%02x%02x',

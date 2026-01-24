@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\LivelloResource\Pages;
 
-use App\Filament\Resources\LivelloResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\LivelloResource;
 
 class EditLivello extends EditRecord
 {

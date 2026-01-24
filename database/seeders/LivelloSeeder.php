@@ -11,28 +11,28 @@ class LivelloSeeder extends Seeder
     {
         $livelli = [
             [
-                'nome' => 'Base',
-                'descrizione' => 'Livello base di adesione',
+                'nome'              => 'Base',
+                'descrizione'       => 'Livello base di adesione',
                 'importo_suggerito' => 20.00,
-                'is_active' => true,
+                'is_active'         => true,
             ],
             [
-                'nome' => 'Pro',
-                'descrizione' => 'Livello pro con vantaggi aggiuntivi',
+                'nome'              => 'Pro',
+                'descrizione'       => 'Livello pro con vantaggi aggiuntivi',
                 'importo_suggerito' => 50.00,
-                'is_active' => true,
+                'is_active'         => true,
             ],
             [
-                'nome' => 'Avanzato',
-                'descrizione' => 'Livello avanzato per sostenitori',
+                'nome'              => 'Avanzato',
+                'descrizione'       => 'Livello avanzato per sostenitori',
                 'importo_suggerito' => 100.00,
-                'is_active' => true,
+                'is_active'         => true,
             ],
             [
-                'nome' => 'Eterno',
-                'descrizione' => 'Socio a vita - contributo una tantum',
+                'nome'              => 'Eterno',
+                'descrizione'       => 'Socio a vita - contributo una tantum',
                 'importo_suggerito' => 500.00,
-                'is_active' => true,
+                'is_active'         => true,
             ],
         ];
 

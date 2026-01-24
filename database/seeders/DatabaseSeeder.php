@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Enums\StatoAdesione;
-use App\Models\Adesione;
-use App\Models\Impostazione;
-use App\Models\Livello;
-use App\Models\Socio;
-use App\Models\User;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Socio;
+use App\Models\Livello;
+use App\Models\Adesione;
+use App\Enums\StatoAdesione;
+use App\Models\Impostazione;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
     {
         // Utente admin
         User::create([
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
+            'name'     => 'Admin',
+            'email'    => 'admin@example.com',
             'password' => Hash::make('password'),
         ]);
 
@@ -30,8 +30,8 @@ class DatabaseSeeder extends Seeder
         // Livelli
         $this->call(LivelloSeeder::class);
 
-        $livelli = Livello::all();
-        $anni = range(2020, 2026);
+        $livelli     = Livello::all();
+        $anni        = range(2020, 2026);
         $currentYear = (int) date('Y');
 
         $nomi = [
@@ -54,24 +54,24 @@ class DatabaseSeeder extends Seeder
             'Ferraro', 'Ferri', 'Fabbri', 'Bianco', 'Marini', 'Grasso', 'Valentini',
         ];
 
-        $soci = [];
+        $soci       = [];
         $usedEmails = [];
 
         for ($i = 0; $i < 100; $i++) {
-            $nome = $nomi[array_rand($nomi)];
+            $nome    = $nomi[array_rand($nomi)];
             $cognome = $cognomi[array_rand($cognomi)];
 
             do {
                 $emailBase = strtolower(substr($nome, 0, 1) . '.' . str_replace(['\'', ' '], '', $cognome));
-                $email = $emailBase . rand(1, 999) . '@example.com';
+                $email     = $emailBase . rand(1, 999) . '@example.com';
             } while (in_array($email, $usedEmails));
 
             $usedEmails[] = $email;
 
             $soci[] = Socio::create([
-                'nome' => $nome,
+                'nome'    => $nome,
                 'cognome' => $cognome,
-                'email' => $email,
+                'email'   => $email,
             ]);
         }
 
@@ -80,7 +80,7 @@ class DatabaseSeeder extends Seeder
 
         foreach ($sociConAdesioni as $socio) {
             // Ogni socio ha tra 1 e 6 anni di adesione (randomico)
-            $numAnni = rand(1, count($anni));
+            $numAnni    = rand(1, count($anni));
             $anniScelti = (array) array_rand(array_flip($anni), $numAnni);
             sort($anniScelti);
 
@@ -88,8 +88,8 @@ class DatabaseSeeder extends Seeder
                 $livello = $livelli->random();
 
                 // Data adesione: giorno random nell'anno
-                $startOfYear = Carbon::create($anno, 1, 1);
-                $endOfYear = Carbon::create($anno, 12, 31);
+                $startOfYear  = Carbon::create($anno, 1, 1);
+                $endOfYear    = Carbon::create($anno, 12, 31);
                 $dataAdesione = Carbon::createFromTimestamp(rand($startOfYear->timestamp, $endOfYear->timestamp));
 
                 // Data scadenza: fine anno
@@ -99,12 +99,12 @@ class DatabaseSeeder extends Seeder
                 $stato = $anno < $currentYear ? StatoAdesione::Scaduta : StatoAdesione::Attiva;
 
                 Adesione::create([
-                    'socio_id' => $socio->id,
-                    'livello_id' => $livello->id,
-                    'anno' => $anno,
+                    'socio_id'      => $socio->id,
+                    'livello_id'    => $livello->id,
+                    'anno'          => $anno,
                     'data_adesione' => $dataAdesione,
                     'data_scadenza' => $dataScadenza,
-                    'stato' => $stato,
+                    'stato'         => $stato,
                 ]);
             }
         }

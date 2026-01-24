@@ -29,7 +29,7 @@ class Livello extends Model
     {
         return [
             'importo_suggerito' => 'decimal:2',
-            'is_active' => 'boolean',
+            'is_active'         => 'boolean',
         ];
     }
 }

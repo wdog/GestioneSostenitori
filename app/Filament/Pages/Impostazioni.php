@@ -2,17 +2,17 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\Impostazione;
 use BackedEnum;
-use Filament\Actions\Action;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Section;
+use App\Models\Impostazione;
+use Filament\Actions\Action;
 use Filament\Schemas\Schema;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Concerns\InteractsWithForms;
 
 class Impostazioni extends Page implements HasForms
 {
@@ -34,7 +34,7 @@ class Impostazioni extends Page implements HasForms
     {
         $this->form->fill([
             'nome_associazione' => Impostazione::get('nome_associazione', 'Associazione Trasimeno'),
-            'logo_path' => Impostazione::get('logo_path'),
+            'logo_path'         => Impostazione::get('logo_path'),
         ]);
     }
 

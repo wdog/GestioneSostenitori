@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\SocioResource\Pages;
 
-use App\Filament\Resources\SocioResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\SocioResource;
 
 class EditSocio extends EditRecord
 {

@@ -12,10 +12,10 @@ class TesseraPdfService
     public function genera(Adesione $adesione): string
     {
         $livelloSlug = strtolower($adesione->livello->nome);
-        $template = $this->getTemplate($livelloSlug);
+        $template    = $this->getTemplate($livelloSlug);
 
         $logoPath = Impostazione::getLogoPath();
-        $logoUrl = null;
+        $logoUrl  = null;
 
         if ($logoPath && Storage::disk('public')->exists($logoPath)) {
             $logoUrl = Storage::disk('public')->path($logoPath);
@@ -24,24 +24,24 @@ class TesseraPdfService
 
         $pdf = Pdf::loadView($template, [
             'adesione' => $adesione,
-            'socio' => [
-                'nome' => $adesione->socio->nome,
-                'cognome' => $adesione->socio->cognome,
-                'codice' => $adesione->codice_tessera,
+            'socio'    => [
+                'nome'            => $adesione->socio->nome,
+                'cognome'         => $adesione->socio->cognome,
+                'codice'          => $adesione->codice_tessera,
                 'anno_iscrizione' => $adesione->anno,
             ],
             'livello' => $adesione->livello,
-            'ente' => [
+            'ente'    => [
                 'nome' => Impostazione::getNomeAssociazione(),
             ],
             'nomeAssociazione' => Impostazione::getNomeAssociazione(),
-            'logoPath' => $logoPath,
-            'logoUrl' => $logoUrl,
-            'palette' => [
-                'primary' => $adesione->livello->color_primary,       // fasce
+            'logoPath'         => $logoPath,
+            'logoUrl'          => $logoUrl,
+            'palette'          => [
+                'primary'   => $adesione->livello->color_primary,       // fasce
                 'secondary' => $adesione->livello->color_secondary,     // sfondo tessera
-                'accent' => $adesione->livello->color_accent,        // badge/elementi evidenziati
-                'label' => $adesione->livello->color_label,         // label secondarie
+                'accent'    => $adesione->livello->color_accent,        // badge/elementi evidenziati
+                'label'     => $adesione->livello->color_label,         // label secondarie
             ],
         ]);
 
@@ -63,7 +63,7 @@ class TesseraPdfService
         $this->genera($adesione);
 
         $filename = "Tessera_{$adesione->socio->cognome}_{$adesione->socio->nome}_{$adesione->anno}.pdf";
-        $path = Storage::disk('public')->path($adesione->tessera_path);
+        $path     = Storage::disk('public')->path($adesione->tessera_path);
 
         return response()->download($path, $filename, [
             'Content-Type' => 'application/pdf',
@@ -72,7 +72,7 @@ class TesseraPdfService
 
     public function getPath(Adesione $adesione): ?string
     {
-        if (! $adesione->tessera_path) {
+        if ( ! $adesione->tessera_path) {
             return null;
         }
 

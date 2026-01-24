@@ -2,22 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\SocioResource\Pages\CreateSocio;
-use App\Filament\Resources\SocioResource\Pages\EditSocio;
-use App\Filament\Resources\SocioResource\Pages\ListSoci;
-use App\Filament\Resources\SocioResource\RelationManagers\AdesioniRelationManager;
-use App\Models\Socio;
 use BackedEnum;
+use App\Models\Socio;
+use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Resources\Resource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use App\Filament\Resources\SocioResource\Pages\ListSoci;
+use App\Filament\Resources\SocioResource\Pages\EditSocio;
+use App\Filament\Resources\SocioResource\Pages\CreateSocio;
+use App\Filament\Resources\SocioResource\RelationManagers\AdesioniRelationManager;
 
 class SocioResource extends Resource
 {
@@ -68,7 +68,7 @@ class SocioResource extends Resource
                     ->searchable()
                     ->color('primary')
                     ->weight(FontWeight::Bold)
-                    ->formatStateUsing(fn($record): string => $record->cognome . ', ' . $record->nome)
+                    ->formatStateUsing(fn ($record): string => $record->cognome . ', ' . $record->nome)
                     ->sortable(['nome', 'cognome']),
                 TextColumn::make('email')
                     ->searchable(),
@@ -103,9 +103,9 @@ class SocioResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListSoci::route('/'),
+            'index'  => ListSoci::route('/'),
             'create' => CreateSocio::route('/create'),
-            'edit' => EditSocio::route('/{record}/edit'),
+            'edit'   => EditSocio::route('/{record}/edit'),
         ];
     }
 }

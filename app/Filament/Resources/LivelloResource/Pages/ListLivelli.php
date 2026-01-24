@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\LivelloResource\Pages;
 
-use App\Filament\Resources\LivelloResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\LivelloResource;
 
 class ListLivelli extends ListRecords
 {

@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\AdesioneResource\Pages;
 
-use App\Filament\Resources\AdesioneResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\AdesioneResource;
 
 class EditAdesione extends EditRecord
 {

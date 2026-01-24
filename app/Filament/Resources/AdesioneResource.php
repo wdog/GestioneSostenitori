@@ -57,9 +57,9 @@ class AdesioneResource extends Resource
                             ->label('Socio')
                             ->relationship(
                                 name: 'socio',
-                                modifyQueryUsing: fn(Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
+                                modifyQueryUsing: fn (Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
                             )
-                            ->getOptionLabelFromRecordUsing(fn(Socio $record) => "{$record->cognome}, {$record->nome}")
+                            ->getOptionLabelFromRecordUsing(fn (Socio $record) => "{$record->cognome}, {$record->nome}")
                             ->searchable(['cognome', 'nome'])
                             ->preload()
                             ->required()
@@ -91,7 +91,7 @@ class AdesioneResource extends Resource
                             ->unique(
                                 table: Adesione::class,
                                 ignoreRecord: true, // Ignora il record corrente in edit
-                                modifyRuleUsing: fn(Unique $rule, Get $get) => $rule
+                                modifyRuleUsing: fn (Unique $rule, Get $get) => $rule
                                     ->where('socio_id', $get('socio_id'))
                             )
                             ->minValue(2000)
@@ -154,7 +154,7 @@ class AdesioneResource extends Resource
             ->filters([
                 SelectFilter::make('anno')
                     ->options(
-                        fn() => Adesione::query()
+                        fn () => Adesione::query()
                             ->distinct()
                             ->pluck('anno', 'anno')
                             ->sortDesc()
@@ -165,7 +165,7 @@ class AdesioneResource extends Resource
                     ->label('Livello')
                     ->relationship('livello', 'nome'),
                 SelectFilter::make('stato')
-                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn($s) => [$s->value => $s->getLabel()])),
+                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn ($s) => [$s->value => $s->getLabel()])),
             ])
             ->filtersFormColumns(3)
             ->persistFiltersInSession()
@@ -191,7 +191,7 @@ class AdesioneResource extends Resource
                     ->action(function (Adesione $record) {
                         $service = app(TesseraPdfService::class);
 
-                        if (! $record->tessera_path) {
+                        if ( ! $record->tessera_path) {
                             $service->genera($record);
                             $record->refresh();
                         }
@@ -220,9 +220,9 @@ class AdesioneResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListAdesioni::route('/'),
+            'index'  => ListAdesioni::route('/'),
             'create' => CreateAdesione::route('/create'),
-            'edit' => EditAdesione::route('/{record}/edit'),
+            'edit'   => EditAdesione::route('/{record}/edit'),
         ];
     }
 }

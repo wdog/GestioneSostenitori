@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\AdesioneResource\Pages;
 
-use App\Filament\Resources\AdesioneResource;
 use App\Mail\TesseraInviata;
 use App\Services\TesseraPdfService;
-use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Mail;
+use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\AdesioneResource;
 
 class CreateAdesione extends CreateRecord
 {

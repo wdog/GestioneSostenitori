@@ -4,13 +4,13 @@ namespace App\Mail;
 
 use App\Models\Adesione;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class TesseraInviata extends Mailable implements ShouldQueue
 {
@@ -30,22 +30,22 @@ class TesseraInviata extends Mailable implements ShouldQueue
         return new Content(
             view: 'emails.tessera-inviata',
             with: [
-                'socio' => $this->adesione->socio,
+                'socio'   => $this->adesione->socio,
                 'livello' => $this->adesione->livello,
-                'anno' => $this->adesione->anno,
+                'anno'    => $this->adesione->anno,
             ],
         );
     }
 
     public function attachments(): array
     {
-        if (! $this->adesione->tessera_path) {
+        if ( ! $this->adesione->tessera_path) {
             return [];
         }
 
         $path = Storage::disk('public')->path($this->adesione->tessera_path);
 
-        if (! file_exists($path)) {
+        if ( ! file_exists($path)) {
             return [];
         }
 

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use App\Enums\StatoAdesione;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 
 class Adesione extends Model
 {
@@ -38,7 +38,6 @@ class Adesione extends Model
                 $adesione->codice_tessera = static::generaCodiceTessera();
             }
         });
-
     }
 
     public function socio(): BelongsTo
@@ -54,10 +53,10 @@ class Adesione extends Model
     protected function casts(): array
     {
         return [
-            'anno' => 'integer',
+            'anno'          => 'integer',
             'data_adesione' => 'date',
             'data_scadenza' => 'date',
-            'stato' => StatoAdesione::class,
+            'stato'         => StatoAdesione::class,
         ];
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\SocioResource\Pages;
 
-use App\Filament\Resources\SocioResource;
 use Filament\Actions\CreateAction;
+use App\Filament\Resources\SocioResource;
 use Filament\Resources\Pages\ListRecords;
 
 class ListSoci extends ListRecords

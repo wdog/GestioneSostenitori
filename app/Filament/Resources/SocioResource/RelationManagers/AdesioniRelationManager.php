@@ -17,7 +17,6 @@ use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Resources\RelationManagers\RelationManager;
 
 class AdesioniRelationManager extends RelationManager
@@ -45,8 +44,7 @@ class AdesioniRelationManager extends RelationManager
                     ->unique(
                         table: Adesione::class,
                         ignoreRecord: true, // Ignora il record corrente in edit
-                        modifyRuleUsing: fn(Unique $rule, $livewire, $state) =>
-                        $rule->where('socio_id', $livewire->ownerRecord->id)
+                        modifyRuleUsing: fn (Unique $rule, $livewire, $state) => $rule->where('socio_id', $livewire->ownerRecord->id)
                     )
                     ->default(date('Y'))
                     ->minValue(2000)
@@ -89,7 +87,7 @@ class AdesioniRelationManager extends RelationManager
             ])
             ->filters([
                 SelectFilter::make('anno')
-                    ->options(fn() => collect(range(date('Y'), 2020))->mapWithKeys(fn($year) => [$year => $year])->toArray()),
+                    ->options(fn () => collect(range(date('Y'), 2020))->mapWithKeys(fn ($year) => [$year => $year])->toArray()),
                 SelectFilter::make('stato')
                     ->options(StatoAdesione::class),
             ])

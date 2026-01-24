@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\AdesioneResource\Pages;
 
-use App\Filament\Resources\AdesioneResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\AdesioneResource;
 
 class ListAdesioni extends ListRecords
 {
