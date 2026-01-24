@@ -20,17 +20,25 @@ class TesseraPdfService
         if ($logoPath && Storage::disk('public')->exists($logoPath)) {
             $logoUrl = Storage::disk('public')->path($logoPath);
         }
-
         $pdf = Pdf::loadView($template, [
             'adesione' => $adesione,
-            'socio' => $adesione->socio,
+            'socio' => [
+                'nome' => $adesione->socio->nome,
+                'cognome' => $adesione->socio->cognome,
+                'codice' => $adesione->codice_tessera,
+                'anno_iscrizione' => $adesione->anno,
+            ],
             'livello' => $adesione->livello,
+            'ente' => [
+                'nome' => Impostazione::getNomeAssociazione(),
+            ],
             'nomeAssociazione' => Impostazione::getNomeAssociazione(),
             'logoPath' => $logoPath,
             'logoUrl' => $logoUrl,
         ]);
 
-        $pdf->setPaper([0, 0, 400, 250], 'portrait');
+        // 85.6mm x 54mm in points (1mm = 2.83465 points)
+        $pdf->setPaper([0, 0, 242.65, 153.07], 'portrait');
 
         $filename = "tessere/{$adesione->anno}/tessera_{$adesione->socio->id}_{$adesione->anno}.pdf";
 
@@ -41,14 +49,17 @@ class TesseraPdfService
         return $filename;
     }
 
-    public function download(Adesione $adesione)
+    public function download(Adesione $adesione): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         // Rigenera sempre per avere il PDF aggiornato
         $this->genera($adesione);
 
         $filename = "Tessera_{$adesione->socio->cognome}_{$adesione->socio->nome}_{$adesione->anno}.pdf";
+        $path = Storage::disk('public')->path($adesione->tessera_path);
 
-        return Storage::disk('public')->download($adesione->tessera_path, $filename);
+        return response()->download($path, $filename, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     public function getPath(Adesione $adesione): ?string

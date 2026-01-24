@@ -1,94 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <title>Tessera Socio</title>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        @page { margin: 0; }
-        html, body {
-            height: 100%;
-            width: 100%;
-            font-family: 'Helvetica', 'Arial', sans-serif;
+        @page {
+            /* size: 85.6mm 54mm; */
+            size: 210mm 148mm;
+            margin: 0;
         }
+
         body {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            padding: 15px;
+            margin: 0;
+            font-family: DejaVu Sans, sans-serif;
+            color: #111;
         }
+
         .card {
-            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
-            border-radius: 12px;
-            padding: 20px;
-            height: 100%;
+            margin: 20% auto;
+            width: 85.6mm;
+            height: 54mm;
+            padding: 4mm;
+            box-sizing: border-box;
+            border-radius: 3mm;
+            border: 1px solid #ccc;
+        }
+
+        .header {
             text-align: center;
-            color: white;
-        }
-        .badge {
-            font-size: 10px;
-            color: #f5576c;
-            margin-bottom: 5px;
-        }
-        .association {
-            font-size: 14px;
             font-weight: bold;
-            color: #f5576c;
-            margin-bottom: 8px;
+            font-size: 11px;
+            margin-bottom: 4mm;
         }
-        .member-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            margin: 15px 0;
+
+        .content {
+            font-size: 9px;
         }
-        .code-box {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border-radius: 8px;
-            padding: 12px;
-            margin: 10px 0;
+
+        .row {
+            margin-bottom: 2mm;
         }
-        .code-label {
+
+        .label {
             font-size: 8px;
-            color: rgba(255,255,255,0.9);
+            color: #555;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
-        .code {
-            font-size: 28px;
+
+        .value {
             font-weight: bold;
-            color: white;
-            letter-spacing: 4px;
-            font-family: 'Courier New', monospace;
-        }
-        .year {
-            display: inline-block;
-            background: rgba(255,255,255,0.1);
-            color: #f5576c;
-            padding: 6px 20px;
-            border-radius: 15px;
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 10px;
-            border: 1px solid #f5576c;
-        }
-        .level {
             font-size: 10px;
-            color: rgba(255,255,255,0.6);
-            margin-top: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 4mm;
+            left: 4mm;
+            right: 4mm;
+            font-size: 7.5px;
+            text-align: right;
+            color: #666;
+        }
+
+        .code {
+            font-family: monospace;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="badge">&#9733; PRO &#9733;</div>
-        <div class="association">{{ $nomeAssociazione }}</div>
-        <div class="member-name">{{ $socio->nome }} {{ $socio->cognome }}</div>
-        <div class="code-box">
-            <div class="code-label">Codice Tessera</div>
-            <div class="code">{{ $adesione->codice_tessera }}</div>
-        </div>
-        <div class="year">{{ $adesione->anno }}</div>
-        <div class="level">Livello {{ $livello->nome }}</div>
+
+<div class="card">
+    {{-- HEADER --}}
+    <div class="header">
+        {{ $ente['nome'] ?? 'ASSOCIAZIONE SPORTIVA' }}
     </div>
+
+    {{-- CONTENT --}}
+    <div class="content">
+        <div class="row">
+            <div class="label">Nome e Cognome</div>
+            <div class="value">{{ $socio['nome'] }} {{ $socio['cognome'] }}</div>
+        </div>
+
+        <div class="row">
+            <div class="label">Codice Socio</div>
+            <div class="value code">{{ $socio['codice'] }}</div>
+        </div>
+
+        <div class="row">
+            <div class="label">Anno di iscrizione</div>
+            <div class="value">{{ $socio['anno_iscrizione'] }}</div>
+        </div>
+    </div>
+
+    {{-- FOOTER --}}
+    <div class="footer">
+        Tessera personale – non cedibile
+    </div>
+</div>
+
 </body>
 </html>
