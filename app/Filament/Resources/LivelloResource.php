@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\Toggle;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Support\Enums\FontWeight;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -39,6 +40,8 @@ class LivelloResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    protected static ?string $slug = 'livelli';
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -55,6 +58,9 @@ class LivelloResource extends Resource
                         TextInput::make('importo_suggerito')
                             ->numeric()
                             ->prefix('€')
+                            ->minValue(0)
+                            ->default(0)
+                            ->required()
                             ->step(0.01),
                         Toggle::make('is_active')
                             ->label('Attivo')
@@ -95,16 +101,21 @@ class LivelloResource extends Resource
             ->columns([
                 TextColumn::make('nome')
                     ->searchable()
+                    ->weight(FontWeight::Bold)
                     ->sortable(),
                 TextColumn::make('importo_suggerito')
-                    ->money('EUR')
+                    ->moneyEUR()
+                    ->color('success')
+                    ->alignRight()
                     ->sortable(),
                 IconColumn::make('is_active')
                     ->label('Attivo')
+                    ->alignCenter()
                     ->boolean(),
                 TextColumn::make('adesioni_count')
                     ->label('Adesioni')
                     ->counts('adesioni')
+                    ->alignRight()
                     ->sortable(),
 
                 ColorColumn::make('color_primary'),
@@ -116,11 +127,8 @@ class LivelloResource extends Resource
                 TernaryFilter::make('is_active')
                     ->label('Attivo'),
             ])
-            ->recordAction('edit')
-            ->recordUrl(null)
             ->recordActions([
-                EditAction::make()
-                    ->slideOver(),
+                EditAction::make(),
                 DeleteAction::make(),
             ])
             ->groupedBulkActions([
@@ -148,10 +156,10 @@ class LivelloResource extends Resource
         $hue = random_int(0, 360);
 
         return [
-            'primary'   => self::hslToHex($hue, 70, 50),      // Colore principale saturo
-            'secondary' => self::hslToHex($hue, 15, 96),    // Quasi bianco con leggera tinta
-            'accent'    => self::hslToHex(($hue + 30) % 360, 80, 45),  // Accento complementare
-            'label'     => self::hslToHex($hue, 60, 25),        // Scuro per testo
+            'color_primary'   => self::hslToHex($hue, 70, 50),      // Colore principale saturo
+            'color_secondary' => self::hslToHex($hue, 15, 96),    // Quasi bianco con leggera tinta
+            'color_accent'    => self::hslToHex(($hue + 30) % 360, 80, 45),  // Accento complementare
+            'color_label'     => self::hslToHex($hue, 60, 25),        // Scuro per testo
         ];
     }
 
@@ -173,7 +181,8 @@ class LivelloResource extends Resource
             default  => [$r, $g, $b] = [$c, 0, $x],
         };
 
-        return sprintf('#%02x%02x%02x',
+        return sprintf(
+            '#%02x%02x%02x',
             (int) (($r + $m) * 255),
             (int) (($g + $m) * 255),
             (int) (($b + $m) * 255)

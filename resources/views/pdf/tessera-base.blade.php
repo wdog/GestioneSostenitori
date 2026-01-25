@@ -7,10 +7,10 @@
 
     <style>
         :root {
-            --primary: {{ $palette['primary'] }};
-            --secondary: {{ $palette['secondary'] }};
-            --accent: {{ $palette['accent'] }};
-            --label: {{ $palette['label'] }};
+            --primary: {{ $palette['color_primary'] }};
+            --secondary: {{ $palette['color_secondary'] }};
+            --accent: {{ $palette['color_accent'] }};
+            --label: {{ $palette['color_label'] }};
         }
 
         @page {

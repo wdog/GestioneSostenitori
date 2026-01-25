@@ -24,10 +24,12 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->spa()
             ->id('admin')
             ->path('admin')
             ->login()
             ->brandName('Trasimeno Prog')
+            ->maxContentWidth('full')
             ->colors([
                 'primary' => Color::Sky,
                 'gray'    => Color::Slate,

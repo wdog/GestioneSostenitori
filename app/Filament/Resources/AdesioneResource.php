@@ -23,7 +23,6 @@ use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Schemas\Components\Utilities\Get;
@@ -45,6 +44,8 @@ class AdesioneResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    protected static ?string $slug = 'adesione';
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -57,9 +58,9 @@ class AdesioneResource extends Resource
                             ->label('Socio')
                             ->relationship(
                                 name: 'socio',
-                                modifyQueryUsing: fn (Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
+                                modifyQueryUsing: fn(Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
                             )
-                            ->getOptionLabelFromRecordUsing(fn (Socio $record) => "{$record->cognome}, {$record->nome}")
+                            ->getOptionLabelFromRecordUsing(fn(Socio $record) => "{$record->cognome}, {$record->nome}")
                             ->searchable(['cognome', 'nome'])
                             ->preload()
                             ->required()
@@ -88,6 +89,9 @@ class AdesioneResource extends Resource
                             ->label('Importo Versato')
                             ->numeric()
                             ->prefix('€')
+                            ->minValue(0)
+                            ->default(0)
+                            ->required()
                             ->step(0.01),
                         TextInput::make('anno')
                             ->numeric()
@@ -96,17 +100,11 @@ class AdesioneResource extends Resource
                             ->unique(
                                 table: Adesione::class,
                                 ignoreRecord: true, // Ignora il record corrente in edit
-                                modifyRuleUsing: fn (Unique $rule, Get $get) => $rule
+                                modifyRuleUsing: fn(Unique $rule, Get $get) => $rule
                                     ->where('socio_id', $get('socio_id'))
                             )
                             ->minValue(2000)
                             ->maxValue(2100),
-                        DatePicker::make('data_adesione')
-                            ->default(now())
-                            ->required(),
-                        DatePicker::make('data_scadenza')
-                            ->default(now()->endOfYear())
-                            ->required(),
                         Select::make('stato')
                             ->options(StatoAdesione::class)
                             ->default(StatoAdesione::Attiva->value)
@@ -144,26 +142,20 @@ class AdesioneResource extends Resource
                     ->sortable(),
                 TextColumn::make('importo_versato')
                     ->label('Importo')
-                    ->money('EUR')
+                    ->color('success')
+                    ->alignRight()
+                    ->moneyEUR()
                     ->sortable(),
                 TextColumn::make('anno')
                     ->sortable(),
                 TextColumn::make('stato')
                     ->badge(),
-                TextColumn::make('data_adesione')
-                    ->date('d/m/Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('data_scadenza')
-                    ->date('d/m/Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('anno')
                     ->options(
-                        fn () => Adesione::query()
+                        fn() => Adesione::query()
                             ->distinct()
                             ->pluck('anno', 'anno')
                             ->sortDesc()
@@ -174,7 +166,7 @@ class AdesioneResource extends Resource
                     ->label('Livello')
                     ->relationship('livello', 'nome'),
                 SelectFilter::make('stato')
-                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn ($s) => [$s->value => $s->getLabel()])),
+                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn($s) => [$s->value => $s->getLabel()])),
             ])
             ->filtersFormColumns(3)
             ->persistFiltersInSession()
@@ -200,7 +192,7 @@ class AdesioneResource extends Resource
                     ->action(function (Adesione $record) {
                         $service = app(TesseraPdfService::class);
 
-                        if ( ! $record->tessera_path) {
+                        if (! $record->tessera_path) {
                             $service->genera($record);
                             $record->refresh();
                         }

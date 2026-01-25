@@ -18,8 +18,6 @@ class Adesione extends Model
         'importo_versato',
         'codice_tessera',
         'anno',
-        'data_adesione',
-        'data_scadenza',
         'stato',
         'tessera_path',
     ];
@@ -57,8 +55,6 @@ class Adesione extends Model
         return [
             'anno'            => 'integer',
             'importo_versato' => MoneyCast::class,
-            'data_adesione'   => 'date',
-            'data_scadenza'   => 'date',
             'stato'           => StatoAdesione::class,
         ];
     }

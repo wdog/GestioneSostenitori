@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Carbon\Carbon;
 use App\Models\Socio;
 use App\Models\Livello;
 use App\Models\Adesione;
@@ -72,24 +71,14 @@ class DemoDataSeeder extends Seeder
             foreach ($anniScelti as $anno) {
                 $livello = $livelli->random();
 
-                // Data adesione: giorno random nell'anno
-                $startOfYear  = Carbon::create($anno, 1, 1);
-                $endOfYear    = Carbon::create($anno, 12, 31);
-                $dataAdesione = Carbon::createFromTimestamp(rand($startOfYear->timestamp, $endOfYear->timestamp));
-
-                // Data scadenza: fine anno
-                $dataScadenza = Carbon::create($anno, 12, 31);
-
                 // Stato: scaduta se anno passato, attiva se anno corrente
                 $stato = $anno < $currentYear ? StatoAdesione::Scaduta : StatoAdesione::Attiva;
 
                 Adesione::create([
-                    'socio_id'      => $socio->id,
-                    'livello_id'    => $livello->id,
-                    'anno'          => $anno,
-                    'data_adesione' => $dataAdesione,
-                    'data_scadenza' => $dataScadenza,
-                    'stato'         => $stato,
+                    'socio_id'   => $socio->id,
+                    'livello_id' => $livello->id,
+                    'anno'       => $anno,
+                    'stato'      => $stato,
                 ]);
             }
         }

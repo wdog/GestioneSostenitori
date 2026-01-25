@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('nome');
             $table->string('cognome');
-            $table->string('email')->unique();
+            $table->string('email')->nullable()->unique();
             $table->timestamps();
         });
     }

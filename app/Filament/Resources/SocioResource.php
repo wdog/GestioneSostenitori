@@ -25,13 +25,15 @@ class SocioResource extends Resource
 
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationLabel = 'Soci';
+    protected static ?string $navigationLabel = 'Sostenitori';
 
-    protected static ?string $modelLabel = 'Socio';
+    protected static ?string $modelLabel = 'Sostenitore';
 
-    protected static ?string $pluralModelLabel = 'Soci';
+    protected static ?string $pluralModelLabel = 'Sostenitore';
 
     protected static ?int $navigationSort = 1;
+
+    protected static ?string $slug = 'sostenitore';
 
     public static function form(Schema $schema): Schema
     {
@@ -49,7 +51,6 @@ class SocioResource extends Resource
                             ->maxLength(255),
                         TextInput::make('email')
                             ->email()
-                            ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
                     ])

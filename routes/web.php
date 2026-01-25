@@ -2,4 +2,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::livewire("/", "pages::homepage");
+Route::livewire('/', 'pages::homepage')->name('homepage');

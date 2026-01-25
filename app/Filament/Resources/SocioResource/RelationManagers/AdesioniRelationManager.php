@@ -15,7 +15,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Resources\RelationManagers\RelationManager;
 
@@ -42,26 +41,21 @@ class AdesioniRelationManager extends RelationManager
                     ->label('Importo Versato')
                     ->numeric()
                     ->prefix('€')
+                    ->minValue(0)
+                    ->required()
+                    ->default(0)
                     ->step(0.01),
                 TextInput::make('anno')
                     ->numeric()
                     ->required()
                     ->unique(
                         table: Adesione::class,
-                        ignoreRecord: true, // Ignora il record corrente in edit
+                        ignoreRecord: true,
                         modifyRuleUsing: fn (Unique $rule, $livewire, $state) => $rule->where('socio_id', $livewire->ownerRecord->id)
                     )
                     ->default(date('Y'))
                     ->minValue(2000)
                     ->maxValue(2078),
-                DatePicker::make('data_adesione')
-                    ->label('Data Adesione')
-                    ->required()
-                    ->default(now()),
-                DatePicker::make('data_scadenza')
-                    ->label('Data Scadenza')
-                    ->required()
-                    ->default(now()->endOfYear()),
                 Select::make('stato')
                     ->options(StatoAdesione::class)
                     ->required()
@@ -81,15 +75,9 @@ class AdesioniRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('importo_versato')
                     ->label('Importo')
-                    ->money('EUR')
-                    ->sortable(),
-                TextColumn::make('data_adesione')
-                    ->label('Data Adesione')
-                    ->date('d/m/Y')
-                    ->sortable(),
-                TextColumn::make('data_scadenza')
-                    ->label('Data Scadenza')
-                    ->date('d/m/Y')
+                    ->moneyEUR()
+                    ->alignRight()
+                    ->color('success')
                     ->sortable(),
                 TextColumn::make('stato')
                     ->badge(),

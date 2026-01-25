@@ -13,8 +13,7 @@ class ListSoci extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()
-                ->slideOver(),
+            CreateAction::make(),
         ];
     }
 }

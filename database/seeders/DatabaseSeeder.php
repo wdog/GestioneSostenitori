@@ -99,12 +99,11 @@ class DatabaseSeeder extends Seeder
                 $stato = $anno < $currentYear ? StatoAdesione::Scaduta : StatoAdesione::Attiva;
 
                 Adesione::create([
-                    'socio_id'      => $socio->id,
-                    'livello_id'    => $livello->id,
-                    'anno'          => $anno,
-                    'data_adesione' => $dataAdesione,
-                    'data_scadenza' => $dataScadenza,
-                    'stato'         => $stato,
+                    'socio_id'        => $socio->id,
+                    'livello_id'      => $livello->id,
+                    'anno'            => $anno,
+                    'stato'           => $stato,
+                    'importo_versato' => random_int(100, 1000) / 100,
                 ]);
             }
         }

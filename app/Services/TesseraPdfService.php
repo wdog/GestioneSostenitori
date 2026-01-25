@@ -38,10 +38,10 @@ class TesseraPdfService
             'logoPath'         => $logoPath,
             'logoUrl'          => $logoUrl,
             'palette'          => [
-                'primary'   => $adesione->livello->color_primary,       // fasce
-                'secondary' => $adesione->livello->color_secondary,     // sfondo tessera
-                'accent'    => $adesione->livello->color_accent,        // badge/elementi evidenziati
-                'label'     => $adesione->livello->color_label,         // label secondarie
+                'color_primary'   => $adesione->livello->color_primary,       // fasce
+                'color_secondary' => $adesione->livello->color_secondary,     // sfondo tessera
+                'color_accent'    => $adesione->livello->color_accent,        // badge/elementi evidenziati
+                'color_label'     => $adesione->livello->color_label,         // label secondarie
             ],
         ]);
 
