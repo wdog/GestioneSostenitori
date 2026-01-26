@@ -8,13 +8,15 @@ use Filament\Support\Contracts\HasLabel;
 
 enum StatoAdesione: string implements HasColor, HasIcon, HasLabel
 {
-    case Attiva  = 'attiva';
+    case Attiva = 'attiva';
+    case PagamentoPendente = 'pagamento_pendente';
     case Scaduta = 'scaduta';
 
     public function getLabel(): string
     {
         return match ($this) {
-            self::Attiva  => 'Attiva',
+            self::Attiva => 'Attiva',
+            self::PagamentoPendente => 'Da Incassare',
             self::Scaduta => 'Scaduta',
         };
     }
@@ -22,7 +24,8 @@ enum StatoAdesione: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::Attiva  => 'success',
+            self::Attiva => 'success',
+            self::PagamentoPendente => 'warning',
             self::Scaduta => 'danger',
         };
     }
@@ -30,7 +33,8 @@ enum StatoAdesione: string implements HasColor, HasIcon, HasLabel
     public function getIcon(): string
     {
         return match ($this) {
-            self::Attiva  => 'heroicon-s-check-circle',
+            self::Attiva => 'heroicon-s-check-circle',
+            self::PagamentoPendente => 'heroicon-s-clock',
             self::Scaduta => 'heroicon-s-x-circle',
         };
     }

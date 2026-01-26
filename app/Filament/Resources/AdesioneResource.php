@@ -26,6 +26,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Actions\ActionGroup;
 use App\Filament\Resources\AdesioneResource\Pages\EditAdesione;
 use App\Filament\Resources\AdesioneResource\Pages\ListAdesioni;
 use App\Filament\Resources\AdesioneResource\Pages\CreateAdesione;
@@ -173,40 +174,42 @@ class AdesioneResource extends Resource
             // ->recordAction('edit')
             // ->recordUrl(null)
             ->recordActions([
-                Action::make('scarica_pdf')
-                    ->label('PDF')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->color('info')
-                    ->action(function (Adesione $record) {
-                        $service = app(TesseraPdfService::class);
+                ActionGroup::make([
+                    Action::make('scarica_pdf')
+                        ->label('PDF')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->color('info')
+                        ->action(function (Adesione $record) {
+                            $service = app(TesseraPdfService::class);
 
-                        return $service->download($record);
-                    }),
-                Action::make('invia_email')
-                    ->label('Email')
-                    ->icon('heroicon-o-envelope')
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->modalHeading('Invia tessera via email')
-                    ->modalDescription('Vuoi inviare la tessera al socio via email?')
-                    ->action(function (Adesione $record) {
-                        $service = app(TesseraPdfService::class);
+                            return $service->download($record);
+                        }),
+                    Action::make('invia_email')
+                        ->label('Email')
+                        ->icon('heroicon-o-envelope')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Invia tessera via email')
+                        ->modalDescription('Vuoi inviare la tessera al socio via email?')
+                        ->action(function (Adesione $record) {
+                            $service = app(TesseraPdfService::class);
 
-                        if (! $record->tessera_path) {
-                            $service->genera($record);
-                            $record->refresh();
-                        }
+                            if (! $record->tessera_path) {
+                                $service->genera($record);
+                                $record->refresh();
+                            }
 
-                        Mail::to($record->socio->email)->queue(new TesseraInviata($record));
+                            Mail::to($record->socio->email)->queue(new TesseraInviata($record));
 
-                        Notification::make()
-                            ->title('Email inviata')
-                            ->body("Tessera inviata a {$record->socio->email}")
-                            ->success()
-                            ->send();
-                    }),
-                EditAction::make(),
-                DeleteAction::make(),
+                            Notification::make()
+                                ->title('Email inviata')
+                                ->body("Tessera inviata a {$record->socio->email}")
+                                ->success()
+                                ->send();
+                        }),
+                    EditAction::make()->hiddenLabel(),
+                    DeleteAction::make()->hiddenLabel(),
+                ])->button(),
             ])
             ->groupedBulkActions([
                 DeleteBulkAction::make(),

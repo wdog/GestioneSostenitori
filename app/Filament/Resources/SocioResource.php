@@ -18,6 +18,7 @@ use App\Filament\Resources\SocioResource\Pages\ListSoci;
 use App\Filament\Resources\SocioResource\Pages\EditSocio;
 use App\Filament\Resources\SocioResource\Pages\CreateSocio;
 use App\Filament\Resources\SocioResource\RelationManagers\AdesioniRelationManager;
+use Filament\Actions\ActionGroup;
 
 class SocioResource extends Resource
 {
@@ -55,8 +56,7 @@ class SocioResource extends Resource
                             ->maxLength(255),
                     ])
                     ->columns([
-                        'sm' => 1,
-                        'lg' => 3,
+                        'sm' => 3,
                     ]),
             ]);
     }
@@ -69,16 +69,19 @@ class SocioResource extends Resource
                     ->searchable()
                     ->color('primary')
                     ->weight(FontWeight::Bold)
-                    ->formatStateUsing(fn ($record): string => $record->cognome . ', ' . $record->nome)
+                    ->formatStateUsing(fn($record): string => $record->cognome . ', ' . $record->nome)
+                    ->description(fn($record): ?string => $record->email)
                     ->sortable(['nome', 'cognome']),
                 TextColumn::make('email')
-                    ->searchable(),
+                    ->searchable()
+                    ->visibleFrom('md'),
                 TextColumn::make('adesioni_count')
                     ->label('Adesioni')
                     ->badge()
                     ->alignCenter()
                     ->counts('adesioni')
-                    ->sortable(),
+                    ->sortable()
+                    ->visibleFrom('sm'),
                 TextColumn::make('created_at')
                     ->dateTime('d/m/Y')
                     ->sortable()
@@ -86,8 +89,11 @@ class SocioResource extends Resource
             ])
             ->defaultSort('cognome')
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    EditAction::make()->hiddenLabel(),
+                    DeleteAction::make()->hiddenLabel(),
+                ])->button()
+
             ])
             ->groupedBulkActions([
                 DeleteBulkAction::make(),

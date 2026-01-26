@@ -22,6 +22,7 @@ use Filament\Tables\Columns\ColorColumn;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Actions\ActionGroup;
 use App\Filament\Resources\LivelloResource\Pages\EditLivello;
 use App\Filament\Resources\LivelloResource\Pages\ListLivelli;
 use App\Filament\Resources\LivelloResource\Pages\CreateLivello;
@@ -128,8 +129,10 @@ class LivelloResource extends Resource
                     ->label('Attivo'),
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    EditAction::make()->hiddenLabel(),
+                    DeleteAction::make()->hiddenLabel(),
+                ])->button(),
             ])
             ->groupedBulkActions([
                 DeleteBulkAction::make(),
