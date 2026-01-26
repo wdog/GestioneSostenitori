@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Models\Impostazione;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Pages\Dashboard;
@@ -28,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('Trasimeno Prog')
+            ->brandName(Impostazione::getNomeAssociazione())
             ->maxContentWidth('full')
             ->colors([
                 'primary' => Color::Sky,

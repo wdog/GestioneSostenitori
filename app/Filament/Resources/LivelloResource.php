@@ -9,8 +9,10 @@ use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Resources\Resource;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Support\Enums\FontWeight;
 use Filament\Forms\Components\Textarea;
@@ -18,13 +20,14 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\View;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Actions\ActionGroup;
 use App\Filament\Resources\LivelloResource\Pages\EditLivello;
 use App\Filament\Resources\LivelloResource\Pages\ListLivelli;
 use App\Filament\Resources\LivelloResource\Pages\CreateLivello;
+use App\Models\Impostazione;
 
 class LivelloResource extends Resource
 {
@@ -68,33 +71,54 @@ class LivelloResource extends Resource
                     ])
 
                     ->columns(1),
-                Section::make('Colori')->schema([
-                    TextInput::make('color_primary')
-                        ->label('Primario')
-                        ->required()
-                        ->type('color'),
-                    TextInput::make('color_secondary')
-                        ->label('Secondario')
-                        ->required()
-                        ->type('color'),
-                    TextInput::make('color_accent')
-                        ->label('Accento')
-                        ->required()
-                        ->type('color'),
-                    TextInput::make('color_label')
-                        ->label('Etichetta')
-                        ->required()
-                        ->type('color'),
-                    Action::make('genera')
-                        ->label('Genera Colori')
-                        ->action(function (Set $set) {
-                            $colors = self::generateRandPalette();
-                            $set('color_primary', $colors['color_primary']);
-                            $set('color_secondary', $colors['color_secondary']);
-                            $set('color_label', $colors['color_label']);
-                            $set('color_accent', $colors['color_accent']);
-                        }),
-                ])->columns(4),
+                Section::make('Colori')
+                    ->columns([
+                        'sm' => 4,
+                    ])
+                    ->schema([
+                        TextInput::make('color_primary')
+                            ->label('Primario')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->type('color'),
+                        TextInput::make('color_secondary')
+                            ->label('Secondario')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->type('color'),
+                        TextInput::make('color_accent')
+                            ->label('Accento')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->type('color'),
+                        TextInput::make('color_label')
+                            ->label('Etichetta')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->type('color'),
+                        Action::make('genera')
+                            ->label('Genera Colori')
+                            ->action(function (Set $set) {
+                                $colors = self::generateRandPalette();
+                                $set('color_primary', $colors['color_primary']);
+                                $set('color_secondary', $colors['color_secondary']);
+                                $set('color_label', $colors['color_label']);
+                                $set('color_accent', $colors['color_accent']);
+                            }),
+                    ]),
+                Section::make('Anteprima Card')
+                    ->schema([
+                        View::make('filament.components.card-preview')
+                            ->viewData(fn ($get) => [
+                                'color_primary' => $get('color_primary'),
+                                'color_secondary' => $get('color_secondary'),
+                                'color_accent' => $get('color_accent'),
+                                'color_label' => $get('color_label'),
+                                'nome' => $get('nome'),
+                                'descrizione' => $get('descrizione'),
+                                'app_name' => Impostazione::getNomeAssociazione(),
+                            ]),
+                    ]),
             ]);
     }
 

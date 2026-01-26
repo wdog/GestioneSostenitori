@@ -16,11 +16,9 @@ class Impostazione extends Model
 
     public static function get(string $chiave, mixed $default = null): mixed
     {
-        return Cache::rememberForever("impostazione.{$chiave}", function () use ($chiave, $default) {
-            $impostazione = static::where('chiave', $chiave)->first();
-
-            return $impostazione?->valore ?? $default;
-        });
+        // Evita la cache durante il boot (es. route:cache, config:cache)
+        $impostazione = static::where('chiave', $chiave)->first();
+        return $impostazione?->valore ?? $default;
     }
 
     public static function set(string $chiave, mixed $valore): void
@@ -35,7 +33,7 @@ class Impostazione extends Model
 
     public static function getNomeAssociazione(): string
     {
-        return static::get('nome_associazione', 'Associazione Trasimeno');
+        return static::get('nome_associazione', 'Associazione');
     }
 
     public static function getLogoPath(): ?string
