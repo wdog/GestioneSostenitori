@@ -19,7 +19,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Tables\Columns\ColorColumn;
-use Filament\Forms\Components\ColorPicker;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Actions\ActionGroup;
@@ -69,30 +68,33 @@ class LivelloResource extends Resource
                     ])
 
                     ->columns(1),
-                Section::make('colors')->schema([
-                    ColorPicker::make('color_primary')
+                Section::make('Colori')->schema([
+                    TextInput::make('color_primary')
+                        ->label('Primario')
                         ->required()
-                        ->reactive()
-                        ->placeholder('#6d28d9'),
-                    ColorPicker::make('color_secondary')
+                        ->type('color'),
+                    TextInput::make('color_secondary')
+                        ->label('Secondario')
                         ->required()
-                        ->placeholder('#f3f4f6'),
-                    ColorPicker::make('color_accent')
+                        ->type('color'),
+                    TextInput::make('color_accent')
+                        ->label('Accento')
                         ->required()
-                        ->placeholder('#1e40af'),
-                    ColorPicker::make('color_label')
+                        ->type('color'),
+                    TextInput::make('color_label')
+                        ->label('Etichetta')
                         ->required()
-                        ->placeholder('#1e40af'),
+                        ->type('color'),
                     Action::make('genera')
                         ->label('Genera Colori')
                         ->action(function (Set $set) {
                             $colors = self::generateRandPalette();
-                            $set('color_primary', $colors['primary']);
-                            $set('color_secondary', $colors['secondary']);
-                            $set('color_label', $colors['label']);
-                            $set('color_accent', $colors['accent']);
+                            $set('color_primary', $colors['color_primary']);
+                            $set('color_secondary', $colors['color_secondary']);
+                            $set('color_label', $colors['color_label']);
+                            $set('color_accent', $colors['color_accent']);
                         }),
-                ]),
+                ])->columns(4),
             ]);
     }
 
@@ -105,6 +107,8 @@ class LivelloResource extends Resource
                     ->weight(FontWeight::Bold)
                     ->sortable(),
                 TextColumn::make('importo_suggerito')
+                    ->label('Importo')
+                    ->description('Imp. suggerito')
                     ->moneyEUR()
                     ->color('success')
                     ->alignRight()
@@ -117,12 +121,16 @@ class LivelloResource extends Resource
                     ->label('Adesioni')
                     ->counts('adesioni')
                     ->alignRight()
-                    ->sortable(),
-
-                ColorColumn::make('color_primary'),
-                ColorColumn::make('color_secondary'),
-                ColorColumn::make('color_accent'),
-                ColorColumn::make('color_label'),
+                    ->sortable()
+                    ->visibleFrom('md'),
+                ColorColumn::make('color_primary')
+                    ->visibleFrom('md'),
+                ColorColumn::make('color_secondary')
+                    ->visibleFrom('md'),
+                ColorColumn::make('color_accent')
+                    ->visibleFrom('md'),
+                ColorColumn::make('color_label')
+                    ->visibleFrom('md'),
             ])
             ->filters([
                 TernaryFilter::make('is_active')
@@ -132,7 +140,7 @@ class LivelloResource extends Resource
                 ActionGroup::make([
                     EditAction::make()->hiddenLabel(),
                     DeleteAction::make()->hiddenLabel(),
-                ])->button(),
+                ])->button()->hiddenLabel(),
             ])
             ->groupedBulkActions([
                 DeleteBulkAction::make(),
