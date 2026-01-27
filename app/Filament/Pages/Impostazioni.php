@@ -51,14 +51,14 @@ class Impostazioni extends Page implements HasForms
                             ->maxLength(255)
                             ->placeholder('Es: Associazione Trasimeno'),
                         FileUpload::make('logo_path')
-                            ->label('Logo Associazione')
-                            ->image()
-                            ->disk('public')
-                            ->directory('logo')
+                            ->maxWidth('300')
                             ->imageEditor()
-                            ->maxSize(1024),
+                            ->label('Logo Associazione')
+                            ->automaticallyResizeImagesToWidth('300')
+                            ->avatar()
+                            ->directory('logo'),
                     ])
-                    ->columns(1),
+                    ->columns(2),
             ])
             ->statePath('data');
     }

@@ -8,6 +8,7 @@ use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Resources\Resource;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Support\Enums\FontWeight;
@@ -18,7 +19,6 @@ use App\Filament\Resources\SocioResource\Pages\ListSoci;
 use App\Filament\Resources\SocioResource\Pages\EditSocio;
 use App\Filament\Resources\SocioResource\Pages\CreateSocio;
 use App\Filament\Resources\SocioResource\RelationManagers\AdesioniRelationManager;
-use Filament\Actions\ActionGroup;
 
 class SocioResource extends Resource
 {
@@ -69,8 +69,8 @@ class SocioResource extends Resource
                     ->searchable()
                     ->color('primary')
                     ->weight(FontWeight::Bold)
-                    ->formatStateUsing(fn($record): string => $record->cognome . ', ' . $record->nome)
-                    ->description(fn($record): ?string => $record->email)
+                    ->formatStateUsing(fn ($record): string => $record->cognome . ', ' . $record->nome)
+                    ->description(fn ($record): ?string => $record->email)
                     ->sortable(['nome', 'cognome']),
                 TextColumn::make('email')
                     ->searchable()
@@ -92,7 +92,7 @@ class SocioResource extends Resource
                 ActionGroup::make([
                     EditAction::make()->hiddenLabel(),
                     DeleteAction::make()->hiddenLabel(),
-                ])->button()
+                ])->button(),
 
             ])
             ->groupedBulkActions([

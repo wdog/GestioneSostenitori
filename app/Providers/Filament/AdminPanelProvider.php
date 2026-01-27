@@ -2,9 +2,9 @@
 
 namespace App\Providers\Filament;
 
-use App\Models\Impostazione;
 use Filament\Panel;
 use Filament\PanelProvider;
+use App\Models\Impostazione;
 use Filament\Pages\Dashboard;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;

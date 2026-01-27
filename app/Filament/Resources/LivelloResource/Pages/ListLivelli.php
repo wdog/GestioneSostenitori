@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources\LivelloResource\Pages;
 
+use App\Actions\GenerateColorPaletteAction;
+use App\Models\Livello;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
+use Illuminate\Support\Facades\Log;
 use Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\LivelloResource;
-use App\Models\Livello;
-use Illuminate\Support\Facades\Log;
 
 class ListLivelli extends ListRecords
 {
@@ -21,7 +22,7 @@ class ListLivelli extends ListRecords
                 ->color('warning')
                 ->action(function () {
                     Livello::get()->each(function ($livello) {
-                        $colors =  LivelloResource::generateRandPalette();
+                        $colors = GenerateColorPaletteAction::make();
                         Log::debug($colors);
                         $livello->update($colors);
                     });

@@ -156,7 +156,7 @@
                     {{-- FOOTER --}}
                     <div class="card-footer">
                         <p>
-                            {{ $livello->nome ?? '' }}
+                            {{ $livello->nome ?? '' }} -
                             {{ $livello->descrizione ?? '' }}
                         </p>
 

@@ -13,11 +13,14 @@ use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Resources\Resource;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
+use Illuminate\Support\HtmlString;
 use App\Services\TesseraPdfService;
 use Illuminate\Support\Facades\Mail;
 use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
@@ -25,8 +28,9 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Actions\ActionGroup;
+use Filament\Schemas\Components\Utilities\Set;
 use App\Filament\Resources\AdesioneResource\Pages\EditAdesione;
 use App\Filament\Resources\AdesioneResource\Pages\ListAdesioni;
 use App\Filament\Resources\AdesioneResource\Pages\CreateAdesione;
@@ -49,19 +53,21 @@ class AdesioneResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema
+        $isPastYear = fn (?Adesione $record): bool => $record !== null && $record->anno < (int) date('Y');
 
+        return $schema
             ->components([
                 Section::make()
                     ->columnSpanFull()
                     ->schema([
                         Select::make('socio_id')
+                            ->disabledOn('edit')
                             ->label('Socio')
                             ->relationship(
                                 name: 'socio',
-                                modifyQueryUsing: fn(Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
+                                modifyQueryUsing: fn (Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
                             )
-                            ->getOptionLabelFromRecordUsing(fn(Socio $record) => "{$record->cognome}, {$record->nome}")
+                            ->getOptionLabelFromRecordUsing(fn (Socio $record) => "{$record->cognome}, {$record->nome}")
                             ->searchable(['cognome', 'nome'])
                             ->preload()
                             ->required()
@@ -85,6 +91,7 @@ class AdesioneResource extends Resource
                             ->label('Livello')
                             ->options(Livello::where('is_active', true)->pluck('nome', 'id'))
                             ->searchable()
+                            ->disabled($isPastYear)
                             ->required(),
                         TextInput::make('importo_versato')
                             ->label('Importo Versato')
@@ -93,22 +100,44 @@ class AdesioneResource extends Resource
                             ->minValue(0)
                             ->default(0)
                             ->required()
+                            ->live()
+                            ->afterStateUpdated(
+                                function (Set $set, Get $get, $state) {
+                                    if ($get('stato') === StatoAdesione::PagamentoPendente) {
+                                        $set('importo_versato', 0);
+                                    }
+                                }
+                            )
+                            ->disabled($isPastYear)
                             ->step(0.01),
+                        // !
                         TextInput::make('anno')
                             ->numeric()
                             ->default(date('Y'))
                             ->required()
+                            ->disabled($isPastYear)
                             ->unique(
                                 table: Adesione::class,
                                 ignoreRecord: true, // Ignora il record corrente in edit
-                                modifyRuleUsing: fn(Unique $rule, Get $get) => $rule
+                                modifyRuleUsing: fn (Unique $rule, Get $get) => $rule
                                     ->where('socio_id', $get('socio_id'))
                             )
                             ->minValue(2000)
                             ->maxValue(2100),
-                        Select::make('stato')
+                        // !
+                        ToggleButtons::make('stato')
+                            ->grouped()
+                            ->reactive()
                             ->options(StatoAdesione::class)
                             ->default(StatoAdesione::Attiva->value)
+                            ->afterStateUpdated(
+                                function (Set $set, Get $get) {
+                                    if ($get('stato') === StatoAdesione::PagamentoPendente) {
+                                        $set('importo_versato', 0);
+                                    }
+                                }
+                            )
+                            ->disabled($isPastYear)
                             ->required(),
                     ])
                     ->columns([
@@ -122,41 +151,47 @@ class AdesioneResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('codice_tessera')
-                    ->label('Codice')
-                    ->searchable()
+                TextColumn::make('anno')
                     ->sortable()
-                    ->copyable()
-                    ->fontFamily('mono')
-                    ->weight('bold'),
+                    ->description(fn ($record): HtmlString => new HtmlString(
+                        '<span class="text-amber-500">' . e($record->livello->nome) . '</span>'
+                    ))
+                    ->searchable(),
+
                 TextColumn::make('socio.full_name')
                     ->label('Socio')
-                    // ->searchable(['socio.nome', 'socio.cognome'])
+                    ->description(fn ($record) => $record->socio->email)
                     ->searchable(['nome', 'cognome'])
+                    ->color('primary')
+                    ->weight(FontWeight::Bold)
                     ->sortable(['socio.cognome', 'socio.nome']),
-                TextColumn::make('livello.nome')
-                    ->label('Livello')
-                    ->badge()
-                    ->color(function ($record) {
-                        // TODO
-                    })
-                    ->sortable(),
+
                 TextColumn::make('importo_versato')
                     ->label('Importo')
-                    ->color('success')
-                    ->alignRight()
                     ->moneyEUR()
+                    ->alignRight()
+                    ->color('success')
+                    ->visibleFrom('sm')
+                    ->description(function ($record): HtmlString {
+                        $icon    = svg($record->stato->getIcon(), 'h-4 w-4')->toHtml();
+                        $classes = match ($record->stato) {
+                            StatoAdesione::Attiva            => 'bg-green-500/10 text-green-500',
+                            StatoAdesione::PagamentoPendente => 'bg-amber-500/10 text-amber-500',
+                            StatoAdesione::Scaduta           => 'bg-red-500/10 text-red-500',
+                        };
+
+                        return new HtmlString(
+                            '<span class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ' . $classes . '">'
+                                . $icon . e($record->stato->getLabel()) . '</span>'
+                        );
+                    })
                     ->sortable(),
-                TextColumn::make('anno')
-                    ->sortable(),
-                TextColumn::make('stato')
-                    ->badge(),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('anno')
                     ->options(
-                        fn() => Adesione::query()
+                        fn () => Adesione::query()
                             ->distinct()
                             ->pluck('anno', 'anno')
                             ->sortDesc()
@@ -167,7 +202,7 @@ class AdesioneResource extends Resource
                     ->label('Livello')
                     ->relationship('livello', 'nome'),
                 SelectFilter::make('stato')
-                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn($s) => [$s->value => $s->getLabel()])),
+                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn ($s) => [$s->value => $s->getLabel()])),
             ])
             ->filtersFormColumns(3)
             ->persistFiltersInSession()
@@ -194,7 +229,7 @@ class AdesioneResource extends Resource
                         ->action(function (Adesione $record) {
                             $service = app(TesseraPdfService::class);
 
-                            if (! $record->tessera_path) {
+                            if ( ! $record->tessera_path) {
                                 $service->genera($record);
                                 $record->refresh();
                             }
@@ -207,12 +242,15 @@ class AdesioneResource extends Resource
                                 ->success()
                                 ->send();
                         }),
-                    EditAction::make()->hiddenLabel(),
-                    DeleteAction::make()->hiddenLabel(),
-                ])->button(),
+                    EditAction::make()
+                        ->hiddenLabel(),
+                    DeleteAction::make()
+                        ->hiddenLabel()
+                        ->hidden(fn (?Adesione $record): bool => $record?->anno < (int) date('Y')),
+                ])->button()->hiddenLabel(),
             ])
             ->groupedBulkActions([
-                DeleteBulkAction::make(),
+                // DeleteBulkAction::make(),
             ]);
     }
 

@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use Exception;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
 
 class Impostazione extends Model
@@ -14,10 +17,29 @@ class Impostazione extends Model
         'valore',
     ];
 
+
+    public static function getTableName()
+    {
+        return with(new static)->getTable();
+    }
     public static function get(string $chiave, mixed $default = null): mixed
     {
-        // Evita la cache durante il boot (es. route:cache, config:cache)
-        $impostazione = static::where('chiave', $chiave)->first();
+
+
+        try {
+            if (App::runningInConsole()) {
+                return $default;
+            }
+
+            if (! Schema::hasTable(static::getTableName())) {
+                return $default;
+            }
+            // Evita la cache durante il boot (es. route:cache, config:cache)
+            $impostazione = static::where('chiave', "{$chiave}")?->first();
+        } catch (Exception $e) {
+            dd($e->getMessage());
+        }
+
         return $impostazione?->valore ?? $default;
     }
 
@@ -28,7 +50,7 @@ class Impostazione extends Model
             ['valore' => $valore]
         );
 
-        Cache::forget("impostazione.{$chiave}");
+        // Cache::forget("impostazione.{$chiave}");
     }
 
     public static function getNomeAssociazione(): string

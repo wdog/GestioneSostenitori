@@ -3,10 +3,10 @@
         "claude_code"
     ],
     "editors": [
-        "claude_code",
-        "vscode"
+        "claude_code"
     ],
     "guidelines": [
-        "filament/filament"
+        "filament/filament",
+        "tightenco/duster"
     ]
 }

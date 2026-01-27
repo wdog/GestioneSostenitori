@@ -73,7 +73,7 @@
                 </div>
             </div>
 
-            <div>
+            <div style="margin: 2px 0">
                 <div
                     style="
                         font-size: 9px;
@@ -93,7 +93,7 @@
                         font-size: 10px;
                         font-weight: bold;
                         border-radius: 6px;
-                    "
+                        "
                 >
                     2026
                 </span>
@@ -115,7 +115,7 @@
             "
         >
             <strong>{{ $nome ?? 'Livello' }}</strong>
-            @if($descrizione)
+            @if ($descrizione)
                 - {{ $descrizione }}
             @endif
         </div>

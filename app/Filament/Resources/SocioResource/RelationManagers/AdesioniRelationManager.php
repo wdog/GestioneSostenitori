@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\SocioResource\RelationManagers;
 
-use App\Models\Livello;
 use App\Models\Adesione;
 use Filament\Tables\Table;
 use App\Enums\StatoAdesione;
@@ -17,8 +16,8 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Resources\RelationManagers\RelationManager;
 
 class AdesioniRelationManager extends RelationManager
@@ -57,7 +56,7 @@ class AdesioniRelationManager extends RelationManager
                     ->unique(
                         table: Adesione::class,
                         ignoreRecord: true,
-                        modifyRuleUsing: fn(Unique $rule, $livewire) => $rule->where('socio_id', $livewire->ownerRecord->id)
+                        modifyRuleUsing: fn (Unique $rule, $livewire) => $rule->where('socio_id', $livewire->ownerRecord->id)
                     )
                     ->default(date('Y'))
                     ->minValue(2000)
@@ -79,7 +78,7 @@ class AdesioniRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('anno')
                     ->sortable()
-                    ->description(fn($record): HtmlString => new HtmlString(
+                    ->description(fn ($record): HtmlString => new HtmlString(
                         '<span class="text-amber-500">' . e($record->livello->nome) . '</span>'
                     ))
                     ->searchable(),
@@ -89,11 +88,11 @@ class AdesioniRelationManager extends RelationManager
                     ->alignRight()
                     ->color('success')
                     ->description(function ($record): HtmlString {
-                        $icon = svg($record->stato->getIcon(), 'h-4 w-4')->toHtml();
+                        $icon    = svg($record->stato->getIcon(), 'h-4 w-4')->toHtml();
                         $classes = match ($record->stato) {
-                            StatoAdesione::Attiva => 'bg-green-500/10 text-green-500',
+                            StatoAdesione::Attiva            => 'bg-green-500/10 text-green-500',
                             StatoAdesione::PagamentoPendente => 'bg-amber-500/10 text-amber-500',
-                            StatoAdesione::Scaduta => 'bg-red-500/10 text-red-500',
+                            StatoAdesione::Scaduta           => 'bg-red-500/10 text-red-500',
                         };
 
                         return new HtmlString(
@@ -105,7 +104,7 @@ class AdesioniRelationManager extends RelationManager
             ])
             ->filters([
                 SelectFilter::make('anno')
-                    ->options(fn() => collect(range(date('Y'), 2020))->mapWithKeys(fn($year) => [$year => $year])->toArray()),
+                    ->options(fn () => collect(range(date('Y'), 2020))->mapWithKeys(fn ($year) => [$year => $year])->toArray()),
                 SelectFilter::make('stato')
                     ->options(StatoAdesione::class),
             ])
@@ -117,7 +116,7 @@ class AdesioniRelationManager extends RelationManager
                     EditAction::make()->hiddenLabel(),
                     DeleteAction::make()
                         ->hiddenLabel()
-                        ->hidden(fn(?Adesione $record): bool => $record?->anno < (int) date('Y')),
+                        ->hidden(fn (?Adesione $record): bool => $record?->anno < (int) date('Y')),
                 ])->button()->hiddenLabel(),
             ])
             ->toolbarActions([
