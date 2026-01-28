@@ -17,28 +17,23 @@ class Impostazione extends Model
         'valore',
     ];
 
-
     public static function getTableName()
     {
-        return with(new static)->getTable();
+        return (new static)->getTable();
     }
+
     public static function get(string $chiave, mixed $default = null): mixed
     {
 
-
-        try {
-            if (App::runningInConsole()) {
-                return $default;
-            }
-
-            if (! Schema::hasTable(static::getTableName())) {
-                return $default;
-            }
-            // Evita la cache durante il boot (es. route:cache, config:cache)
-            $impostazione = static::where('chiave', "{$chiave}")?->first();
-        } catch (Exception $e) {
-            dd($e->getMessage());
+        if (App::runningInConsole()) {
+            return $default;
         }
+
+        if (! Schema::hasTable(static::getTableName())) {
+            return $default;
+        }
+        // Evita la cache durante il boot (es. route:cache, config:cache)
+        $impostazione = static::where('chiave', "{$chiave}")?->first();
 
         return $impostazione?->valore ?? $default;
     }

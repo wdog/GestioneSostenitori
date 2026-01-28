@@ -20,12 +20,12 @@ class Socio extends Model
         return $this->hasMany(Adesione::class);
     }
 
-    public function getNomeCompletoAttribute(): string
+    protected function getNomeCompletoAttribute(): string
     {
         return "{$this->nome} {$this->cognome}";
     }
 
-    public function getFullNameAttribute(): string
+    protected function getFullNameAttribute(): string
     {
         return "{$this->cognome} {$this->nome}";
     }

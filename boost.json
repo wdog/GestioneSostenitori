@@ -5,8 +5,5 @@
     "editors": [
         "claude_code"
     ],
-    "guidelines": [
-        "filament/filament",
-        "tightenco/duster"
-    ]
+    "guidelines": true
 }

@@ -16,7 +16,7 @@ class CreateAdesione extends CreateRecord
     {
         $adesione = $this->record;
 
-        $service = app(TesseraPdfService::class);
+        $service = resolve(TesseraPdfService::class);
         $service->genera($adesione);
         $adesione->refresh();
 

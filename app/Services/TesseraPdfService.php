@@ -11,7 +11,7 @@ class TesseraPdfService
 {
     public function genera(Adesione $adesione): string
     {
-        $livelloSlug = strtolower($adesione->livello->nome);
+        $livelloSlug = strtolower((string) $adesione->livello->nome);
         $template    = $this->getTemplate($livelloSlug);
 
         $logoPath = Impostazione::getLogoPath();

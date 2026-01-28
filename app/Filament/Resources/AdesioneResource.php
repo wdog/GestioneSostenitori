@@ -84,9 +84,7 @@ class AdesioneResource extends Resource
                                     ->unique('soci', 'email')
                                     ->maxLength(255),
                             ])
-                            ->createOptionUsing(function (array $data): int {
-                                return Socio::create($data)->id;
-                            }),
+                            ->createOptionUsing(fn (array $data): int => Socio::create($data)->id),
                         Select::make('livello_id')
                             ->label('Livello')
                             ->options(Livello::where('is_active', true)->pluck('nome', 'id'))
@@ -215,7 +213,7 @@ class AdesioneResource extends Resource
                         ->icon('heroicon-o-arrow-down-tray')
                         ->color('info')
                         ->action(function (Adesione $record) {
-                            $service = app(TesseraPdfService::class);
+                            $service = resolve(TesseraPdfService::class);
 
                             return $service->download($record);
                         }),
@@ -227,7 +225,7 @@ class AdesioneResource extends Resource
                         ->modalHeading('Invia tessera via email')
                         ->modalDescription('Vuoi inviare la tessera al socio via email?')
                         ->action(function (Adesione $record) {
-                            $service = app(TesseraPdfService::class);
+                            $service = resolve(TesseraPdfService::class);
 
                             if ( ! $record->tessera_path) {
                                 $service->genera($record);

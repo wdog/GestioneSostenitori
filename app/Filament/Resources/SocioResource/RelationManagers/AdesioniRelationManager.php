@@ -104,7 +104,7 @@ class AdesioniRelationManager extends RelationManager
             ])
             ->filters([
                 SelectFilter::make('anno')
-                    ->options(fn () => collect(range(date('Y'), 2020))->mapWithKeys(fn ($year) => [$year => $year])->toArray()),
+                    ->options(fn () => collect(range(date('Y'), 2020))->mapWithKeys(fn ($year) => [$year => $year])->all()),
                 SelectFilter::make('stato')
                     ->options(StatoAdesione::class),
             ])

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use App\Actions\GenerateColorPaletteAction;
 use BackedEnum;
 use App\Models\Livello;
 use Filament\Tables\Table;
@@ -24,6 +23,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Filters\TernaryFilter;
+use App\Actions\GenerateColorPaletteAction;
 use Filament\Schemas\Components\Utilities\Set;
 use App\Filament\Resources\LivelloResource\Pages\EditLivello;
 use App\Filament\Resources\LivelloResource\Pages\ListLivelli;
@@ -110,7 +110,7 @@ class LivelloResource extends Resource
                     ->columnSpanFull()
                     ->schema([
                         View::make('filament.components.card-preview')
-                            ->viewData(fn($get) => [
+                            ->viewData(fn ($get) => [
                                 'color_primary'   => $get('color_primary'),
                                 'color_secondary' => $get('color_secondary'),
                                 'color_accent'    => $get('color_accent'),

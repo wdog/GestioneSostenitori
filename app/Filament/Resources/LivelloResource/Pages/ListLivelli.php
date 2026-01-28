@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\LivelloResource\Pages;
 
-use App\Actions\GenerateColorPaletteAction;
 use App\Models\Livello;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Illuminate\Support\Facades\Log;
 use Filament\Resources\Pages\ListRecords;
+use App\Actions\GenerateColorPaletteAction;
 use App\Filament\Resources\LivelloResource;
 
 class ListLivelli extends ListRecords
