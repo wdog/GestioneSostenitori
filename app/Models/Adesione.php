@@ -13,7 +13,7 @@ class Adesione extends Model
     protected $table = 'adesioni';
 
     protected $fillable = [
-        'socio_id',
+        'sostenitore_id',
         'livello_id',
         'importo_versato',
         'codice_tessera',
@@ -40,9 +40,14 @@ class Adesione extends Model
         });
     }
 
-    public function socio(): BelongsTo
+    public function sostenitore(): BelongsTo
     {
-        return $this->belongsTo(Socio::class);
+        return $this->belongsTo(Sostenitore::class);
+    }
+
+    public function canBeChanged(): bool
+    {
+        return $this->anno >= (int) date('Y');
     }
 
     public function livello(): BelongsTo

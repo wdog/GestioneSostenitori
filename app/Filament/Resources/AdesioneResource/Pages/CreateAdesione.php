@@ -20,6 +20,6 @@ class CreateAdesione extends CreateRecord
         $service->genera($adesione);
         $adesione->refresh();
 
-        Mail::to($adesione->socio->email)->queue(new TesseraInviata($adesione));
+        Mail::to($adesione->sostenitore->email)->queue(new TesseraInviata($adesione));
     }
 }

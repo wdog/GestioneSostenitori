@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Exception;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
@@ -24,12 +23,11 @@ class Impostazione extends Model
 
     public static function get(string $chiave, mixed $default = null): mixed
     {
-
         if (App::runningInConsole()) {
             return $default;
         }
 
-        if (! Schema::hasTable(static::getTableName())) {
+        if ( ! Schema::hasTable(static::getTableName())) {
             return $default;
         }
         // Evita la cache durante il boot (es. route:cache, config:cache)

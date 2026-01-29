@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Livello extends Model
@@ -32,5 +34,11 @@ class Livello extends Model
             'importo_suggerito' => MoneyCast::class,
             'is_active'         => 'boolean',
         ];
+    }
+
+    #[Scope]
+    protected function active(Builder $query): void
+    {
+        $query->where('is_active', true);
     }
 }

@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Socio extends Model
+class Sostenitore extends Model
 {
-    protected $table = 'soci';
+    protected $table = 'sostenitori';
 
     protected $fillable = [
         'nome',
@@ -20,13 +21,10 @@ class Socio extends Model
         return $this->hasMany(Adesione::class);
     }
 
-    protected function getNomeCompletoAttribute(): string
+    protected function fullName(): Attribute
     {
-        return "{$this->nome} {$this->cognome}";
-    }
-
-    protected function getFullNameAttribute(): string
-    {
-        return "{$this->cognome} {$this->nome}";
+        return Attribute::make(
+            get: fn () => "{$this->cognome}, {$this->nome}",
+        );
     }
 }

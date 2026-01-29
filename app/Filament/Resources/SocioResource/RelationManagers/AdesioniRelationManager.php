@@ -56,7 +56,7 @@ class AdesioniRelationManager extends RelationManager
                     ->unique(
                         table: Adesione::class,
                         ignoreRecord: true,
-                        modifyRuleUsing: fn (Unique $rule, $livewire) => $rule->where('socio_id', $livewire->ownerRecord->id)
+                        modifyRuleUsing: fn (Unique $rule, $livewire) => $rule->where('sostenitore_id', $livewire->ownerRecord->id)
                     )
                     ->default(date('Y'))
                     ->minValue(2000)

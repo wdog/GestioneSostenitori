@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Tessera Socio</title>
+    <title>Tessera Sostenitore</title>
 
     <style>
         :root {
@@ -131,14 +131,14 @@
                         <div class="row">
                             <div class="label">Nome e Cognome</div>
                             <div class="value name">
-                                {{ $socio['nome'] }} {{ $socio['cognome'] }}
+                                {{ $sostenitore['nome'] }} {{ $sostenitore['cognome'] }}
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="label">Codice</div>
                             <div class="value code">
-                                {{ $socio['codice'] }}
+                                {{ $sostenitore['codice'] }}
                             </div>
                         </div>
 
@@ -146,7 +146,7 @@
                             <div class="label">Anno di iscrizione</div>
                             <div class="value">
                                 <span class="badge">
-                                    {{ $socio['anno_iscrizione'] }}
+                                    {{ $sostenitore['anno_iscrizione'] }}
                                 </span>
                             </div>
                         </div>

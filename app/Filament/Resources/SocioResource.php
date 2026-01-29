@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use BackedEnum;
-use App\Models\Socio;
+use App\Models\Sostenitore;
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
@@ -22,7 +22,7 @@ use App\Filament\Resources\SocioResource\RelationManagers\AdesioniRelationManage
 
 class SocioResource extends Resource
 {
-    protected static ?string $model = Socio::class;
+    protected static ?string $model = Sostenitore::class;
 
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-users';
 
@@ -69,7 +69,7 @@ class SocioResource extends Resource
                     ->searchable()
                     ->color('primary')
                     ->weight(FontWeight::Bold)
-                    ->formatStateUsing(fn ($record): string => $record->cognome . ', ' . $record->nome)
+                    ->formatStateUsing(fn ($record): string => $record->fullName)
                     ->description(fn ($record): ?string => $record->email)
                     ->sortable(['nome', 'cognome']),
                 TextColumn::make('email')

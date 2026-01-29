@@ -13,7 +13,7 @@
 
     <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
         <p style="font-size: 18px; margin-bottom: 20px;">
-            Gentile <strong>{{ $socio->nome }} {{ $socio->cognome }}</strong>,
+            Gentile <strong>{{ $sostenitore->nome }} {{ $sostenitore->cognome }}</strong>,
         </p>
 
         <p>

@@ -3,10 +3,11 @@
 namespace App\Filament\Resources;
 
 use BackedEnum;
-use App\Models\Socio;
+use App\Models\User;
 use App\Models\Livello;
 use App\Models\Adesione;
 use Filament\Tables\Table;
+use App\Models\Sostenitore;
 use App\Enums\StatoAdesione;
 use App\Mail\TesseraInviata;
 use Filament\Actions\Action;
@@ -53,23 +54,25 @@ class AdesioneResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $isPastYear = fn (?Adesione $record): bool => $record !== null && $record->anno < (int) date('Y');
+        // $cannotChange = fn(?Adesione $record): bool => $record !== null && ! $record->canBeChanged();
+        $cannotChange = false;
 
         return $schema
             ->components([
                 Section::make()
                     ->columnSpanFull()
                     ->schema([
-                        Select::make('socio_id')
+                        Select::make('sostenitore_id')
                             ->disabledOn('edit')
-                            ->label('Socio')
+                            ->label('Sostenitore')
                             ->relationship(
-                                name: 'socio',
-                                modifyQueryUsing: fn (Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
+                                name: 'sostenitore',
+                                titleAttribute: 'nome',
+                                modifyQueryUsing: fn(Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
                             )
-                            ->getOptionLabelFromRecordUsing(fn (Socio $record) => "{$record->cognome}, {$record->nome}")
-                            ->searchable(['cognome', 'nome'])
+                            ->getOptionLabelFromRecordUsing(fn(Sostenitore $record) => "{$record->fullName}")
                             ->preload()
+                            ->searchable(['nome', 'cognome', 'email'])
                             ->required()
                             ->createOptionForm([
                                 TextInput::make('nome')
@@ -81,18 +84,21 @@ class AdesioneResource extends Resource
                                 TextInput::make('email')
                                     ->email()
                                     ->required()
-                                    ->unique('soci', 'email')
+                                    ->unique('sostenitori', 'email')
                                     ->maxLength(255),
                             ])
-                            ->createOptionUsing(fn (array $data): int => Socio::create($data)->id),
+                            ->createOptionUsing(fn(array $data): int => Sostenitore::create($data)->id),
+
                         Select::make('livello_id')
                             ->label('Livello')
-                            ->options(Livello::where('is_active', true)->pluck('nome', 'id'))
                             ->searchable()
-                            ->disabled($isPastYear)
+                            ->options(fn() => Livello::query()->active()->pluck('nome', 'id'))
+                            ->disabled($cannotChange)
                             ->required(),
+
                         TextInput::make('importo_versato')
                             ->label('Importo Versato')
+                            ->desct
                             ->numeric()
                             ->prefix('€')
                             ->minValue(0)
@@ -106,19 +112,19 @@ class AdesioneResource extends Resource
                                     }
                                 }
                             )
-                            ->disabled($isPastYear)
+                            ->disabled($cannotChange)
                             ->step(0.01),
                         // !
                         TextInput::make('anno')
                             ->numeric()
                             ->default(date('Y'))
                             ->required()
-                            ->disabled($isPastYear)
+                            ->disabled($cannotChange)
                             ->unique(
                                 table: Adesione::class,
                                 ignoreRecord: true, // Ignora il record corrente in edit
-                                modifyRuleUsing: fn (Unique $rule, Get $get) => $rule
-                                    ->where('socio_id', $get('socio_id'))
+                                modifyRuleUsing: fn(Unique $rule, Get $get) => $rule
+                                    ->where('sostenitore_id', $get('sostenitore_id'))
                             )
                             ->minValue(2000)
                             ->maxValue(2100),
@@ -135,7 +141,7 @@ class AdesioneResource extends Resource
                                     }
                                 }
                             )
-                            ->disabled($isPastYear)
+                            ->disabled($cannotChange)
                             ->required(),
                     ])
                     ->columns([
@@ -151,18 +157,18 @@ class AdesioneResource extends Resource
             ->columns([
                 TextColumn::make('anno')
                     ->sortable()
-                    ->description(fn ($record): HtmlString => new HtmlString(
+                    ->description(fn($record): HtmlString => new HtmlString(
                         '<span class="text-amber-500">' . e($record->livello->nome) . '</span>'
                     ))
                     ->searchable(),
 
-                TextColumn::make('socio.full_name')
-                    ->label('Socio')
-                    ->description(fn ($record) => $record->socio->email)
+                TextColumn::make('sostenitore.full_name')
+                    ->label('Sostenitore')
+                    ->description(fn($record) => $record->sostenitore->email)
                     ->searchable(['nome', 'cognome'])
                     ->color('primary')
                     ->weight(FontWeight::Bold)
-                    ->sortable(['socio.cognome', 'socio.nome']),
+                    ->sortable(['sostenitore.cognome', 'sostenitore.nome']),
 
                 TextColumn::make('importo_versato')
                     ->label('Importo')
@@ -189,7 +195,7 @@ class AdesioneResource extends Resource
             ->filters([
                 SelectFilter::make('anno')
                     ->options(
-                        fn () => Adesione::query()
+                        fn() => Adesione::query()
                             ->distinct()
                             ->pluck('anno', 'anno')
                             ->sortDesc()
@@ -200,7 +206,7 @@ class AdesioneResource extends Resource
                     ->label('Livello')
                     ->relationship('livello', 'nome'),
                 SelectFilter::make('stato')
-                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn ($s) => [$s->value => $s->getLabel()])),
+                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn($s) => [$s->value => $s->getLabel()])),
             ])
             ->filtersFormColumns(3)
             ->persistFiltersInSession()
@@ -223,20 +229,20 @@ class AdesioneResource extends Resource
                         ->color('success')
                         ->requiresConfirmation()
                         ->modalHeading('Invia tessera via email')
-                        ->modalDescription('Vuoi inviare la tessera al socio via email?')
+                        ->modalDescription('Vuoi inviare la tessera al sostenitore via email?')
                         ->action(function (Adesione $record) {
                             $service = resolve(TesseraPdfService::class);
 
-                            if ( ! $record->tessera_path) {
+                            if (! $record->tessera_path) {
                                 $service->genera($record);
                                 $record->refresh();
                             }
 
-                            Mail::to($record->socio->email)->queue(new TesseraInviata($record));
+                            Mail::to($record->sostenitore->email)->queue(new TesseraInviata($record));
 
                             Notification::make()
                                 ->title('Email inviata')
-                                ->body("Tessera inviata a {$record->socio->email}")
+                                ->body("Tessera inviata a {$record->sostenitore->email}")
                                 ->success()
                                 ->send();
                         }),
@@ -244,7 +250,7 @@ class AdesioneResource extends Resource
                         ->hiddenLabel(),
                     DeleteAction::make()
                         ->hiddenLabel()
-                        ->hidden(fn (?Adesione $record): bool => $record?->anno < (int) date('Y')),
+                        ->hidden(fn(?Adesione $record): bool => $record?->anno < (int) date('Y')),
                 ])->button()->hiddenLabel(),
             ])
             ->groupedBulkActions([

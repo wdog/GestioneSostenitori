@@ -30,7 +30,7 @@ class TesseraInviata extends Mailable implements ShouldQueue
         return new Content(
             view: 'emails.tessera-inviata',
             with: [
-                'socio'   => $this->adesione->socio,
+                'sostenitore'   => $this->adesione->sostenitore,
                 'livello' => $this->adesione->livello,
                 'anno'    => $this->adesione->anno,
             ],
@@ -51,7 +51,7 @@ class TesseraInviata extends Mailable implements ShouldQueue
 
         return [
             Attachment::fromPath($path)
-                ->as("Tessera_{$this->adesione->socio->cognome}_{$this->adesione->anno}.pdf")
+                ->as("Tessera_{$this->adesione->sostenitore->cognome}_{$this->adesione->anno}.pdf")
                 ->withMime('application/pdf'),
         ];
     }

@@ -30,7 +30,7 @@ class LivelloSeeder extends Seeder
             ],
             [
                 'nome'              => 'Eterno',
-                'descrizione'       => 'Socio a vita - contributo una tantum',
+                'descrizione'       => 'Sostenitore a vita - contributo una tantum',
                 'importo_suggerito' => 500.00,
                 'is_active'         => true,
             ],

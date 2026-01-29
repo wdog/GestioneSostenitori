@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Carbon\Carbon;
 use App\Models\User;
-use App\Models\Socio;
+use App\Models\Sostenitore;
 use App\Models\Livello;
 use App\Models\Adesione;
 use App\Enums\StatoAdesione;
@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
             'Ferraro', 'Ferri', 'Fabbri', 'Bianco', 'Marini', 'Grasso', 'Valentini',
         ];
 
-        $soci       = [];
+        $sostenitori       = [];
         $usedEmails = [];
 
         for ($i = 0; $i < 100; $i++) {
@@ -68,18 +68,18 @@ class DatabaseSeeder extends Seeder
 
             $usedEmails[] = $email;
 
-            $soci[] = Socio::create([
+            $sostenitori[] = Sostenitore::create([
                 'nome'    => $nome,
                 'cognome' => $cognome,
                 'email'   => $email,
             ]);
         }
 
-        // 90% dei soci (90 soci) avranno adesioni
-        $sociConAdesioni = array_slice($soci, 0, 90);
+        // 90% dei sostenitori (90 sostenitori) avranno adesioni
+        $sociConAdesioni = array_slice($sostenitori, 0, 90);
 
-        foreach ($sociConAdesioni as $socio) {
-            // Ogni socio ha tra 1 e 6 anni di adesione (randomico)
+        foreach ($sociConAdesioni as $sostenitore) {
+            // Ogni sostenitore ha tra 1 e 6 anni di adesione (randomico)
             $numAnni    = rand(1, count($anni));
             $anniScelti = (array) array_rand(array_flip($anni), $numAnni);
             sort($anniScelti);
@@ -99,7 +99,7 @@ class DatabaseSeeder extends Seeder
                 $stato = $anno < $currentYear ? StatoAdesione::Scaduta : StatoAdesione::Attiva;
 
                 Adesione::create([
-                    'socio_id'        => $socio->id,
+                    'sostenitore_id'        => $sostenitore->id,
                     'livello_id'      => $livello->id,
                     'anno'            => $anno,
                     'stato'           => $stato,
@@ -109,7 +109,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->command->info('Utente admin creato: admin@example.com / password');
-        $this->command->info('Creati 100 soci, di cui 90 con adesioni per gli anni 2020-2026');
+        $this->command->info('Creati 100 sostenitori, di cui 90 con adesioni per gli anni 2020-2026');
         $this->command->info('Totale adesioni create: ' . Adesione::count());
     }
 }

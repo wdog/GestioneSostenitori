@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('adesioni', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('socio_id')->constrained('soci')->cascadeOnDelete();
+            $table->foreignId('sostenitore_id')->constrained('sostenitori')->cascadeOnDelete();
             $table->foreignId('livello_id')->constrained('livelli')->cascadeOnDelete();
             $table->year('anno');
             $table->date('data_adesione');
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('tessera_path')->nullable();
             $table->timestamps();
 
-            $table->unique(['socio_id', 'anno']);
+            $table->unique(['sostenitore_id', 'anno']);
         });
     }
 
