@@ -18,7 +18,7 @@ class Impostazioni extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-s-cog-6-tooth';
 
     protected static ?string $navigationLabel = 'Impostazioni';
 

@@ -24,7 +24,7 @@ class SocioResource extends Resource
 {
     protected static ?string $model = Sostenitore::class;
 
-    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-users';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-s-users';
 
     protected static ?string $navigationLabel = 'Sostenitori';
 
@@ -45,12 +45,18 @@ class SocioResource extends Resource
 
                     ->schema([
                         TextInput::make('nome')
+                            ->prefixIcon('heroicon-s-user')
+                            ->prefixIconColor('primary')
                             ->required()
                             ->maxLength(255),
                         TextInput::make('cognome')
+                            ->prefixIcon('heroicon-s-user')
+                            ->prefixIconColor('primary')
                             ->required()
                             ->maxLength(255),
                         TextInput::make('email')
+                            ->prefixIcon('heroicon-s-envelope')
+                            ->prefixIconColor('primary')
                             ->email()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),

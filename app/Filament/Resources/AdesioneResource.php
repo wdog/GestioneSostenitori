@@ -40,7 +40,7 @@ class AdesioneResource extends Resource
 {
     protected static ?string $model = Adesione::class;
 
-    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-document-text';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-s-document-text';
 
     protected static ?string $navigationLabel = 'Adesioni';
 
@@ -63,6 +63,8 @@ class AdesioneResource extends Resource
                     ->columnSpanFull()
                     ->schema([
                         Select::make('sostenitore_id')
+                            ->prefixIcon('heroicon-s-user')
+                            ->prefixIconColor('success')
                             ->disabledOn('edit')
                             ->label('Sostenitore')
                             ->relationship(
@@ -90,6 +92,8 @@ class AdesioneResource extends Resource
                             ->createOptionUsing(fn(array $data): int => Sostenitore::create($data)->id),
 
                         Select::make('livello_id')
+                            ->prefixIcon('heroicon-s-star')
+                            ->prefixIconColor('success')
                             ->label('Livello')
                             ->searchable()
                             ->options(fn() => Livello::query()->active()->pluck('nome', 'id'))
@@ -97,10 +101,11 @@ class AdesioneResource extends Resource
                             ->required(),
 
                         TextInput::make('importo_versato')
+                            ->prefixIcon('heroicon-s-currency-euro')
+                            ->prefixIconColor('success')
                             ->label('Importo Versato')
-                            ->desct
+                            ->helperText('Importo versato va indicata solo ad avvenuto incasso')
                             ->numeric()
-                            ->prefix('€')
                             ->minValue(0)
                             ->default(0)
                             ->required()
@@ -116,6 +121,8 @@ class AdesioneResource extends Resource
                             ->step(0.01),
                         // !
                         TextInput::make('anno')
+                            ->prefixIcon('heroicon-s-calendar')
+                            ->prefixIconColor('success')
                             ->numeric()
                             ->default(date('Y'))
                             ->required()
@@ -216,7 +223,7 @@ class AdesioneResource extends Resource
                 ActionGroup::make([
                     Action::make('scarica_pdf')
                         ->label('PDF')
-                        ->icon('heroicon-o-arrow-down-tray')
+                        ->icon('heroicon-s-arrow-down-tray')
                         ->color('info')
                         ->action(function (Adesione $record) {
                             $service = resolve(TesseraPdfService::class);
@@ -225,7 +232,7 @@ class AdesioneResource extends Resource
                         }),
                     Action::make('invia_email')
                         ->label('Email')
-                        ->icon('heroicon-o-envelope')
+                        ->icon('heroicon-s-envelope')
                         ->color('success')
                         ->requiresConfirmation()
                         ->modalHeading('Invia tessera via email')

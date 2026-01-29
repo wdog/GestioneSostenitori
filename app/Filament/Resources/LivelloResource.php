@@ -33,7 +33,7 @@ class LivelloResource extends Resource
 {
     protected static ?string $model = Livello::class;
 
-    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-star';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-s-star';
 
     protected static ?string $navigationLabel = 'Livelli';
 
@@ -52,25 +52,28 @@ class LivelloResource extends Resource
                 Section::make()
                     ->schema([
                         TextInput::make('nome')
+                            ->prefixIcon('heroicon-s-tag')
+                            ->prefixIconColor('warning')
                             ->required()
                             ->maxLength(255)
                             ->placeholder('Es: Base, Pro, Avanzato, Eterno'),
-                        Textarea::make('descrizione')
-                            ->rows(3)
-                            ->maxLength(65535),
+                        TextInput::make('descrizione')
+                            ->maxLength(255),
                         TextInput::make('importo_suggerito')
+                            ->prefixIcon('heroicon-s-currency-euro')
+                            ->prefixIconColor('warning')
                             ->numeric()
-                            ->prefix('€')
                             ->minValue(0)
                             ->default(0)
                             ->required()
                             ->step(0.01),
                         Toggle::make('is_active')
                             ->label('Attivo')
+                            ->inline(false)
                             ->default(true),
                     ])
 
-                    ->columns(1),
+                    ->columns(2),
                 Section::make('Colori')
                     ->columns([
                         'sm' => 4,
