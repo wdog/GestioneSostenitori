@@ -24,11 +24,11 @@ $bot->onCommand('start', function (Nutgram $bot) {
     $chatId = $bot->chatId();
     $bot->sendMessage("Ciao! Il tuo Chat ID è: <b>{$chatId}</b>\n\nUsalo per configurare le notifiche nel pannello admin.", parse_mode: \SergiX44\Nutgram\Telegram\Properties\ParseMode::HTML);
 })
-    ->description('The start command!');
+    ->description('Il tuo ID');
 
 
 $bot->onCommand('menu', MenuCommand::class)
-    ->description('The menu command!');
+    ->description('Menu Principale');
 
 $bot->onCallbackQuery(function (Nutgram $bot) {
     $service = app(TelegramNotificationService::class);
@@ -39,7 +39,6 @@ $bot->onCallbackQuery(function (Nutgram $bot) {
         'menu:summary_adesioni'    => $service->summaryAdesioni($chatId),
         default               => null,
     };
-    $bot->sendMessage("👍", parse_mode: ParseMode::HTML);
     $bot->answerCallbackQuery();
 });
 
