@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\StatoAdesione;
 use App\Models\User;
 use App\Models\Adesione;
 use App\Models\Sostenitore;
@@ -9,6 +10,8 @@ use App\Models\Impostazione;
 use SergiX44\Nutgram\Nutgram;
 use Illuminate\Support\Facades\Log;
 use SergiX44\Nutgram\Telegram\Properties\ParseMode;
+use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
+use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
 
 class TelegramNotificationService
 {
@@ -44,9 +47,9 @@ class TelegramNotificationService
         return array_unique(array_merge($recipients, $userChatIds));
     }
 
-    protected function send(string $message): void
+    protected function send(string $message, $parse_mode = ParseMode::HTML): void
     {
-        if ( ! $this->isEnabled()) {
+        if (! $this->isEnabled()) {
             return;
         }
 
@@ -61,7 +64,7 @@ class TelegramNotificationService
                 $this->bot()->sendMessage(
                     text: $message,
                     chat_id: $chatId,
-                    parse_mode: ParseMode::HTML,
+                    parse_mode: $parse_mode,
                 );
             } catch (\Throwable $e) {
                 Log::warning("Telegram notification failed for chat {$chatId}: {$e->getMessage()}");
@@ -76,16 +79,21 @@ class TelegramNotificationService
 
     public function notifyNuovoSostenitore(Sostenitore $sostenitore): void
     {
-        $totaleAdesioni = Sostenitore::count();
+        $totaleSostenitori = Sostenitore::count();
+        $data = $sostenitore->created_at->format('d/m/Y H:i');
 
-        $message = "🆕 <b>Nuovo Sostenitore</b>\n"
-            . "━━━━━━━━━━━━━━━━━━\n"
-            . "👤 <b>{$sostenitore->nome} {$sostenitore->cognome}</b>\n"
-            . "✉️ {$sostenitore->email}\n"
-            . '📅 Registrato il: ' . $sostenitore->created_at->format('d/m/Y H:i') . "\n"
-            . "━━━━━━━━━━━━━━━━━━\n"
-            . "📊 Totale sostenitori: <b>{$totaleAdesioni}</b>\n"
-            . "🏛 {$this->nomeAssociazione()}";
+        $message = "🆕  <b>NUOVO SOSTENITORE</b>\n"
+            . "\n"
+            . "👤  <b>{$sostenitore->nome} {$sostenitore->cognome}</b>\n"
+            . "\n"
+            . "✉️  Email: {$sostenitore->email}\n"
+            . "📅  Registrato il: {$data}\n"
+            . "\n"
+            . "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n"
+            . "\n"
+            . "📊  Totale sostenitori: <b>{$totaleSostenitori}</b>\n"
+            . "\n"
+            . "🏛  <i>{$this->nomeAssociazione()}</i>\n";
 
         $this->send($message);
     }
@@ -96,7 +104,7 @@ class TelegramNotificationService
         $campiModificati = collect($dirty)
             ->except(['updated_at'])
             ->keys()
-            ->map(fn (string $campo) => match ($campo) {
+            ->map(fn(string $campo) => match ($campo) {
                 'nome'    => '📝 Nome',
                 'cognome' => '📝 Cognome',
                 'email'   => '✉️ Email',
@@ -104,13 +112,16 @@ class TelegramNotificationService
             })
             ->implode(', ');
 
-        $message = "✏️ <b>Sostenitore Modificato</b>\n"
-            . "━━━━━━━━━━━━━━━━━━\n"
-            . "👤 <b>{$sostenitore->nome} {$sostenitore->cognome}</b>\n"
-            . "✉️ {$sostenitore->email}\n"
-            . "🔄 Campi modificati: {$campiModificati}\n"
-            . "━━━━━━━━━━━━━━━━━━\n"
-            . "🏛 {$this->nomeAssociazione()}";
+        $message = "✏️  <b>SOSTENITORE MODIFICATO</b>\n"
+            . "\n"
+            . "👤  <b>{$sostenitore->nome} {$sostenitore->cognome}</b>\n"
+            . "\n"
+            . "✉️  Email: {$sostenitore->email}\n"
+            . "🔄  Campi: {$campiModificati}\n"
+            . "\n"
+            . "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n"
+            . "\n"
+            . "🏛  <i>{$this->nomeAssociazione()}</i>\n";
 
         $this->send($message);
     }
@@ -122,19 +133,22 @@ class TelegramNotificationService
         $importo      = $adesione->importo_versato ? number_format($adesione->importo_versato, 2, ',', '.') . ' €' : 'Non specificato';
         $adesioniAnno = Adesione::where('anno', $adesione->anno)->count();
 
-        $message = "🎉 <b>Nuova Adesione</b>\n"
-            . "━━━━━━━━━━━━━━━━━━\n"
-            . "👤 <b>{$sostenitore->nome} {$sostenitore->cognome}</b>\n"
-            . "✉️ {$sostenitore->email}\n"
-            . "━━━━━━━━━━━━━━━━━━\n"
-            . "🏅 Livello: <b>{$livello->nome}</b>\n"
-            . "📅 Anno: <b>{$adesione->anno}</b>\n"
-            . "💰 Importo: <b>{$importo}</b>\n"
-            . "🎫 Tessera: <code>{$adesione->codice_tessera}</code>\n"
-            . "📌 Stato: {$adesione->stato->getLabel()}\n"
-            . "━━━━━━━━━━━━━━━━━━\n"
-            . "📊 Adesioni {$adesione->anno}: <b>{$adesioniAnno}</b>\n"
-            . "🏛 {$this->nomeAssociazione()}";
+        $message = "🎉  <b>NUOVA ADESIONE</b>\n"
+            . "\n"
+            . "👤  <b>{$sostenitore->nome} {$sostenitore->cognome}</b>\n"
+            . "✉️  {$sostenitore->email}\n"
+            . "\n"
+            . "🏅  Livello:  <b>{$livello->nome}</b>\n"
+            . "📅  Anno:     <b>{$adesione->anno}</b>\n"
+            . "💰  Importo:  <b>{$importo}</b>\n"
+            . "🎫  Tessera:  <code>{$adesione->codice_tessera}</code>\n"
+            . "📌  Stato:    {$adesione->stato->getLabel()}\n"
+            . "\n"
+            . "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n"
+            . "\n"
+            . "📊  Adesioni {$adesione->anno}: <b>{$adesioniAnno}</b>\n"
+            . "\n"
+            . "🏛  <i>{$this->nomeAssociazione()}</i>\n";
 
         $this->send($message);
     }
@@ -149,28 +163,88 @@ class TelegramNotificationService
         $campiModificati = collect($dirty)
             ->except(['updated_at'])
             ->keys()
-            ->map(fn (string $campo) => match ($campo) {
+            ->map(fn(string $campo) => match ($campo) {
                 'livello_id'      => '🏅 Livello',
                 'stato'           => '📌 Stato',
                 'importo_versato' => '💰 Importo',
                 'tessera_path'    => '🎫 Tessera',
-                'codice_tessera'  => '🎫 Codice tessera',
+                'codice_tessera'  => '🎫 Codice',
                 default           => $campo,
             })
             ->implode(', ');
 
-        $message = "✏️ <b>Adesione Modificata</b>\n"
-            . "━━━━━━━━━━━━━━━━━━\n"
-            . "👤 <b>{$sostenitore->nome} {$sostenitore->cognome}</b>\n"
-            . "━━━━━━━━━━━━━━━━━━\n"
-            . "🏅 Livello: <b>{$livello->nome}</b>\n"
-            . "📅 Anno: <b>{$adesione->anno}</b>\n"
-            . "💰 Importo: <b>{$importo}</b>\n"
-            . "📌 Stato: {$adesione->stato->getLabel()}\n"
-            . "🔄 Modifiche: {$campiModificati}\n"
-            . "━━━━━━━━━━━━━━━━━━\n"
-            . "🏛 {$this->nomeAssociazione()}";
+        $message = "✏️  <b>ADESIONE MODIFICATA</b>\n"
+            . "\n"
+            . "👤  <b>{$sostenitore->nome} {$sostenitore->cognome}</b>\n"
+            . "\n"
+            . "🏅  Livello:  <b>{$livello->nome}</b>\n"
+            . "📅  Anno:     <b>{$adesione->anno}</b>\n"
+            . "💰  Importo:  <b>{$importo}</b>\n"
+            . "📌  Stato:    {$adesione->stato->getLabel()}\n"
+            . "\n"
+            . "🔄  Modifiche: {$campiModificati}\n"
+            . "\n"
+            . "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n"
+            . "\n"
+            . "🏛  <i>{$this->nomeAssociazione()}</i>\n";
 
         $this->send($message);
+    }
+
+
+    public function menu(int|string $chatId): void
+    {
+        $keyboard = InlineKeyboardMarkup::make()
+            ->addRow(
+                InlineKeyboardButton::make(
+                    text: 'Numero Sostenitori',
+                    callback_data: 'menu:summary_sostenitori'
+                )
+            )
+            ->addRow(
+                InlineKeyboardButton::make(
+                    text: 'Numero Adesioni per anno',
+                    callback_data: 'menu:summary_adesioni'
+                )
+            );
+
+        $this->bot()->sendMessage(
+            chat_id: $chatId,
+            text: "📋 *Menu Report*",
+            parse_mode: 'Markdown',
+            reply_markup: $keyboard
+        );
+    }
+
+    public function summarySostenitori(int|string $chatId): void
+    {
+        $count = Sostenitore::query()->count();
+        Log::debug($count);
+        $this->bot()->sendMessage(
+            chat_id: $chatId,
+            text: "📈 *Numero Sostenitori*\n\nTotale:\t*{$count}*",
+            parse_mode: ParseMode::MARKDOWN
+        );
+    }
+
+    public function summaryAdesioni(int|string $chatId): void
+    {
+        $rows = Adesione::query()
+            ->selectRaw('anno, COUNT(*) as total')
+            ->whereIn('stato', StatoAdesione::pagate())
+            ->groupBy('anno')
+            ->orderBy("anno", 'desc')
+            ->pluck('total', 'anno');
+
+        $text = "📈 *Adesioni per anno*\n\n";
+        foreach ($rows as $anno => $total) {
+            $text .= "🔸{$anno}:\t*{$total}*\n";
+        }
+
+        $this->bot()->sendMessage(
+            chat_id: $chatId,
+            text: $text,
+            parse_mode: ParseMode::MARKDOWN
+        );
     }
 }

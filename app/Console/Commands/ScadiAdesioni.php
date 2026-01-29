@@ -26,7 +26,7 @@ class ScadiAdesioni extends Command
         $updated = Adesione::query()
             ->where('anno', '<', $currentYear)
             ->where('stato', StatoAdesione::PagamentoPendente)
-            ->update(['stato' => StatoAdesione::Scaduta, 'importo_versato' => 0]);
+            ->update(['stato' => StatoAdesione::Annullata, 'importo_versato' => 0]);
 
         $this->info("Adesioni scadute Non Pagate: {$updated}");
 
