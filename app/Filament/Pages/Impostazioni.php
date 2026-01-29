@@ -7,6 +7,7 @@ use Filament\Pages\Page;
 use App\Models\Impostazione;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -33,8 +34,10 @@ class Impostazioni extends Page implements HasForms
     public function mount(): void
     {
         $this->form->fill([
-            'nome_associazione' => Impostazione::get('nome_associazione', 'Associazione Trasimeno'),
-            'logo_path'         => Impostazione::get('logo_path'),
+            'nome_associazione'              => Impostazione::get('nome_associazione', 'Associazione Trasimeno'),
+            'logo_path'                      => Impostazione::get('logo_path'),
+            'telegram_group_chat_id'         => Impostazione::get('telegram_group_chat_id'),
+            'telegram_notifications_enabled' => (bool) Impostazione::get('telegram_notifications_enabled', false),
         ]);
     }
 
@@ -49,7 +52,7 @@ class Impostazioni extends Page implements HasForms
                             ->label('Nome Associazione')
                             ->required()
                             ->maxLength(255)
-                            ->placeholder('Es: Associazione Trasimeno'),
+                            ->placeholder('Es: Associazione'),
                         FileUpload::make('logo_path')
                             ->maxWidth('300')
                             ->imageEditor()
@@ -57,6 +60,18 @@ class Impostazioni extends Page implements HasForms
                             ->automaticallyResizeImagesToWidth('300')
                             ->avatar()
                             ->directory('logo'),
+                    ])
+                    ->columns(2),
+                Section::make('Notifiche Telegram')
+                    ->description('Configura le notifiche Telegram per nuovi sostenitori e adesioni')
+                    ->schema([
+                        Toggle::make('telegram_notifications_enabled')
+                            ->label('Abilita notifiche su Telegram')
+                            ->helperText('Attiva o disattiva globalmente l\'invio delle notifiche Telegram'),
+                        TextInput::make('telegram_group_chat_id')
+                            ->label('Chat ID Gruppo Telegram')
+                            ->placeholder('Es: -1001234567890')
+                            ->helperText('Il Chat ID del gruppo Telegram dove inviare le notifiche'),
                     ])
                     ->columns(2),
             ])
@@ -69,6 +84,8 @@ class Impostazioni extends Page implements HasForms
 
         Impostazione::set('nome_associazione', $data['nome_associazione']);
         Impostazione::set('logo_path', $data['logo_path']);
+        Impostazione::set('telegram_group_chat_id', $data['telegram_group_chat_id']);
+        Impostazione::set('telegram_notifications_enabled', $data['telegram_notifications_enabled'] ? '1' : '0');
 
         Notification::make()
             ->title('Impostazioni salvate')

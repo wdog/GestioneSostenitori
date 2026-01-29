@@ -23,14 +23,14 @@ class Impostazione extends Model
 
     public static function get(string $chiave, mixed $default = null): mixed
     {
-        if (App::runningInConsole()) {
+        if (App::runningInConsole() && ! App::isBooted()) {
             return $default;
         }
 
         if ( ! Schema::hasTable(static::getTableName())) {
             return $default;
         }
-        // Evita la cache durante il boot (es. route:cache, config:cache)
+
         $impostazione = static::where('chiave', "{$chiave}")?->first();
 
         return $impostazione?->valore ?? $default;
