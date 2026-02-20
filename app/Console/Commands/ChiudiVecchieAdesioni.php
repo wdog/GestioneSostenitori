@@ -6,7 +6,7 @@ use App\Models\Adesione;
 use App\Enums\StatoAdesione;
 use Illuminate\Console\Command;
 
-class ScadiAdesioni extends Command
+class ChiudiVecchieAdesioni extends Command
 {
     protected $signature = 'adesioni:scadi';
 

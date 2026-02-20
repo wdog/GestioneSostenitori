@@ -21,8 +21,6 @@ class ScaricaTesseraAction extends Action
             ->label('PDF')
             ->icon('heroicon-s-arrow-down-tray')
             ->color('info')
-            ->action(function (Adesione $record) {
-                return resolve(TesseraPdfService::class)->download($record);
-            });
+            ->action(fn (Adesione $record) => resolve(TesseraPdfService::class)->download($record));
     }
 }
