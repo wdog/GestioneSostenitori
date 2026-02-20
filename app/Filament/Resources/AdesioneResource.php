@@ -156,6 +156,7 @@ class AdesioneResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+
             ->columns([
                 TextColumn::make('anno')
                     ->sortable()
@@ -192,6 +193,14 @@ class AdesioneResource extends Resource
                         );
                     })
                     ->sortable(),
+
+                TextColumn::make('created_at')
+                    ->label('Data Sottoscrizione')
+                    ->alignRight()
+                    ->dateTime('d M, Y H:i')
+                    ->visibleFrom('sm')
+                    ->sortable(),
+
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([

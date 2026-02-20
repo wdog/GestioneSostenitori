@@ -5,7 +5,7 @@ namespace App\Providers\Filament;
 use Filament\Panel;
 use Filament\PanelProvider;
 use App\Models\Impostazione;
-use Filament\Pages\Dashboard;
+use App\Filament\Pages\Dashboard;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
 use Filament\Http\Middleware\Authenticate;
@@ -32,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName(Impostazione::getNomeAssociazione())
             ->maxContentWidth('full')
             ->colors([
-                'primary' => Color::Sky,
+                'primary' => Color::Teal,
                 'gray'    => Color::Slate,
                 'success' => Color::Emerald,
                 'warning' => Color::Amber,
@@ -47,7 +47,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
+                // AccountWidget::class,
             ])
             // ->sidebarCollapsibleOnDesktop()
             ->middleware([
