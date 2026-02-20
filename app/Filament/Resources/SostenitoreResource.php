@@ -15,12 +15,12 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
-use App\Filament\Resources\SocioResource\Pages\ListSoci;
-use App\Filament\Resources\SocioResource\Pages\EditSocio;
-use App\Filament\Resources\SocioResource\Pages\CreateSocio;
-use App\Filament\Resources\SocioResource\RelationManagers\AdesioniRelationManager;
+use App\Filament\Resources\SostenitoreResource\Pages\EditSostenitore;
+use App\Filament\Resources\SostenitoreResource\Pages\ListSostenitori;
+use App\Filament\Resources\SostenitoreResource\Pages\CreateSostenitore;
+use App\Filament\Resources\SostenitoreResource\RelationManagers\AdesioniRelationManager;
 
-class SocioResource extends Resource
+class SostenitoreResource extends Resource
 {
     protected static ?string $model = Sostenitore::class;
 
@@ -44,25 +44,41 @@ class SocioResource extends Resource
                     ->columnSpanFull()
 
                     ->schema([
+                        // !
                         TextInput::make('nome')
                             ->prefixIcon('heroicon-s-user')
                             ->prefixIconColor('primary')
                             ->required()
                             ->maxLength(255),
+                        // !
                         TextInput::make('cognome')
                             ->prefixIcon('heroicon-s-user')
                             ->prefixIconColor('primary')
                             ->required()
                             ->maxLength(255),
+                        // !
                         TextInput::make('email')
                             ->prefixIcon('heroicon-s-envelope')
                             ->prefixIconColor('primary')
                             ->email()
                             ->unique(ignoreRecord: true)
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->validationMessages([
+                                'unique' => 'Questa email è già registrata.',
+                            ]),
+                        // !
+                        TextInput::make('mobile')
+                            ->prefixIcon('heroicon-m-device-phone-mobile')
+                            ->prefixIconColor('primary')
+                            ->unique(ignoreRecord: true)
+                            ->mask('999.9999.99.99')
+                            ->placeholder('___.____.__.__')
+                            ->validationMessages([
+                                'unique' => 'Questo numero di cellulare è già registrato.',
+                            ]),
                     ])
                     ->columns([
-                        'sm' => 3,
+                        'sm' => 2,
                     ]),
             ]);
     }
@@ -71,16 +87,20 @@ class SocioResource extends Resource
     {
         return $table
             ->columns([
+                // !
                 TextColumn::make('nome')
-                    ->searchable()
+                    ->searchable(['nome', 'cognome', 'email'])
                     ->color('primary')
                     ->weight(FontWeight::Bold)
                     ->formatStateUsing(fn ($record): string => $record->fullName)
                     ->description(fn ($record): ?string => $record->email)
                     ->sortable(['nome', 'cognome']),
-                TextColumn::make('email')
+                // !
+                TextColumn::make('mobile')
+                    ->label('Cellulare')
                     ->searchable()
-                    ->visibleFrom('md'),
+                    ->visibleFrom('sm'),
+                // !
                 TextColumn::make('adesioni_count')
                     ->label('Adesioni')
                     ->badge()
@@ -88,6 +108,7 @@ class SocioResource extends Resource
                     ->counts('adesioni')
                     ->sortable()
                     ->visibleFrom('sm'),
+                // !
                 TextColumn::make('created_at')
                     ->dateTime('d/m/Y')
                     ->sortable()
@@ -98,7 +119,9 @@ class SocioResource extends Resource
                 ActionGroup::make([
                     EditAction::make()->hiddenLabel(),
                     DeleteAction::make()->hiddenLabel(),
-                ])->button(),
+                ])
+                    ->button()
+                    ->hiddenLabel(),
 
             ])
             ->groupedBulkActions([
@@ -116,9 +139,9 @@ class SocioResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListSoci::route('/'),
-            'create' => CreateSocio::route('/create'),
-            'edit'   => EditSocio::route('/{record}/edit'),
+            'index'  => ListSostenitori::route('/'),
+            'create' => CreateSostenitore::route('/create'),
+            'edit'   => EditSostenitore::route('/{record}/edit'),
         ];
     }
 }

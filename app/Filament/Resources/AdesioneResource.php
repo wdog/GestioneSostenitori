@@ -237,14 +237,11 @@ class AdesioneResource extends Resource
                         ->modalDescription('Vuoi inviare la tessera al sostenitore via email?')
                         ->action(function (Adesione $record) {
                             $service = resolve(TesseraPdfService::class);
-
                             if ( ! $record->tessera_path) {
                                 $service->genera($record);
                                 $record->refresh();
                             }
-
                             Mail::to($record->sostenitore->email)->queue(new TesseraInviata($record));
-
                             Notification::make()
                                 ->title('Email inviata')
                                 ->body("Tessera inviata a {$record->sostenitore->email}")

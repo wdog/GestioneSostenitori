@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\SocioResource\RelationManagers;
+namespace App\Filament\Resources\SostenitoreResource\RelationManagers;
 
 use App\Models\Adesione;
 use Filament\Tables\Table;
@@ -109,7 +109,7 @@ class AdesioniRelationManager extends RelationManager
                     ->options(StatoAdesione::class),
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()->createAnother(false),
             ])
             ->recordActions([
                 ActionGroup::make([
@@ -117,7 +117,9 @@ class AdesioniRelationManager extends RelationManager
                     DeleteAction::make()
                         ->hiddenLabel()
                         ->hidden(fn (?Adesione $record): bool => $record?->anno < (int) date('Y')),
-                ])->button()->hiddenLabel(),
+                ])
+                    ->button()
+                    ->hiddenLabel(),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make(),
