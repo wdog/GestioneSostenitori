@@ -3,33 +3,28 @@
 namespace App\Filament\Resources;
 
 use BackedEnum;
-use App\Models\User;
 use App\Models\Livello;
 use App\Models\Adesione;
 use Filament\Tables\Table;
 use App\Models\Sostenitore;
 use App\Enums\StatoAdesione;
-use App\Mail\TesseraInviata;
-use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Resources\Resource;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Illuminate\Support\HtmlString;
-use App\Services\TesseraPdfService;
-use Illuminate\Support\Facades\Mail;
 use Filament\Forms\Components\Select;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Actions\InviaTesseraAction;
 use Filament\Forms\Components\ToggleButtons;
+use App\Filament\Actions\ScaricaTesseraAction;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use App\Filament\Resources\AdesioneResource\Pages\EditAdesione;
@@ -70,9 +65,9 @@ class AdesioneResource extends Resource
                             ->relationship(
                                 name: 'sostenitore',
                                 titleAttribute: 'nome',
-                                modifyQueryUsing: fn(Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
+                                modifyQueryUsing: fn (Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
                             )
-                            ->getOptionLabelFromRecordUsing(fn(Sostenitore $record) => "{$record->fullName}")
+                            ->getOptionLabelFromRecordUsing(fn (Sostenitore $record) => "{$record->fullName}")
                             ->preload()
                             ->searchable(['nome', 'cognome', 'email'])
                             ->required()
@@ -89,14 +84,14 @@ class AdesioneResource extends Resource
                                     ->unique('sostenitori', 'email')
                                     ->maxLength(255),
                             ])
-                            ->createOptionUsing(fn(array $data): int => Sostenitore::create($data)->id),
+                            ->createOptionUsing(fn (array $data): int => Sostenitore::create($data)->id),
 
                         Select::make('livello_id')
                             ->prefixIcon('heroicon-s-star')
                             ->prefixIconColor('success')
                             ->label('Livello')
                             ->searchable()
-                            ->options(fn() => Livello::query()->active()->pluck('nome', 'id'))
+                            ->options(fn () => Livello::query()->active()->pluck('nome', 'id'))
                             ->disabled($cannotChange)
                             ->required(),
 
@@ -130,7 +125,7 @@ class AdesioneResource extends Resource
                             ->unique(
                                 table: Adesione::class,
                                 ignoreRecord: true, // Ignora il record corrente in edit
-                                modifyRuleUsing: fn(Unique $rule, Get $get) => $rule
+                                modifyRuleUsing: fn (Unique $rule, Get $get) => $rule
                                     ->where('sostenitore_id', $get('sostenitore_id'))
                             )
                             ->minValue(2000)
@@ -161,17 +156,18 @@ class AdesioneResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+
             ->columns([
                 TextColumn::make('anno')
                     ->sortable()
-                    ->description(fn($record): HtmlString => new HtmlString(
+                    ->description(fn ($record): HtmlString => new HtmlString(
                         '<span class="text-amber-500">' . e($record->livello->nome) . '</span>'
                     ))
                     ->searchable(),
 
                 TextColumn::make('sostenitore.full_name')
                     ->label('Sostenitore')
-                    ->description(fn($record) => $record->sostenitore->email)
+                    ->description(fn ($record) => $record->sostenitore->email)
                     ->searchable(['nome', 'cognome'])
                     ->color('primary')
                     ->weight(FontWeight::Bold)
@@ -197,12 +193,20 @@ class AdesioneResource extends Resource
                         );
                     })
                     ->sortable(),
+
+                TextColumn::make('created_at')
+                    ->label('Data Sottoscrizione')
+                    ->alignRight()
+                    ->dateTime('d M, Y H:i')
+                    ->visibleFrom('sm')
+                    ->sortable(),
+
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('anno')
                     ->options(
-                        fn() => Adesione::query()
+                        fn () => Adesione::query()
                             ->distinct()
                             ->pluck('anno', 'anno')
                             ->sortDesc()
@@ -213,7 +217,7 @@ class AdesioneResource extends Resource
                     ->label('Livello')
                     ->relationship('livello', 'nome'),
                 SelectFilter::make('stato')
-                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn($s) => [$s->value => $s->getLabel()])),
+                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn ($s) => [$s->value => $s->getLabel()])),
             ])
             ->filtersFormColumns(3)
             ->persistFiltersInSession()
@@ -221,43 +225,13 @@ class AdesioneResource extends Resource
             // ->recordUrl(null)
             ->recordActions([
                 ActionGroup::make([
-                    Action::make('scarica_pdf')
-                        ->label('PDF')
-                        ->icon('heroicon-s-arrow-down-tray')
-                        ->color('info')
-                        ->action(function (Adesione $record) {
-                            $service = resolve(TesseraPdfService::class);
-
-                            return $service->download($record);
-                        }),
-                    Action::make('invia_email')
-                        ->label('Email')
-                        ->icon('heroicon-s-envelope')
-                        ->color('success')
-                        ->requiresConfirmation()
-                        ->modalHeading('Invia tessera via email')
-                        ->modalDescription('Vuoi inviare la tessera al sostenitore via email?')
-                        ->action(function (Adesione $record) {
-                            $service = resolve(TesseraPdfService::class);
-
-                            if (! $record->tessera_path) {
-                                $service->genera($record);
-                                $record->refresh();
-                            }
-
-                            Mail::to($record->sostenitore->email)->queue(new TesseraInviata($record));
-
-                            Notification::make()
-                                ->title('Email inviata')
-                                ->body("Tessera inviata a {$record->sostenitore->email}")
-                                ->success()
-                                ->send();
-                        }),
+                    ScaricaTesseraAction::make(),
+                    InviaTesseraAction::make(),
                     EditAction::make()
                         ->hiddenLabel(),
                     DeleteAction::make()
                         ->hiddenLabel()
-                        ->hidden(fn(?Adesione $record): bool => $record?->anno < (int) date('Y')),
+                        ->hidden(fn (?Adesione $record): bool => $record?->anno < (int) date('Y')),
                 ])->button()->hiddenLabel(),
             ])
             ->groupedBulkActions([

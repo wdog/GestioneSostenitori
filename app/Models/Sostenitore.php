@@ -14,6 +14,7 @@ class Sostenitore extends Model
         'nome',
         'cognome',
         'email',
+        'mobile',
     ];
 
     public function adesioni(): HasMany

@@ -16,7 +16,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\View;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Support\Enums\FontWeight;
-use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;

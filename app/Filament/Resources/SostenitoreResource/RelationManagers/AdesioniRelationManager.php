@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\SocioResource\RelationManagers;
+namespace App\Filament\Resources\SostenitoreResource\RelationManagers;
 
 use App\Models\Adesione;
 use Filament\Tables\Table;
@@ -17,7 +17,9 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
+use App\Filament\Actions\InviaTesseraAction;
 use Filament\Forms\Components\ToggleButtons;
+use App\Filament\Actions\ScaricaTesseraAction;
 use Filament\Resources\RelationManagers\RelationManager;
 
 class AdesioniRelationManager extends RelationManager
@@ -109,15 +111,19 @@ class AdesioniRelationManager extends RelationManager
                     ->options(StatoAdesione::class),
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()->createAnother(false),
             ])
             ->recordActions([
                 ActionGroup::make([
+                    InviaTesseraAction::make(),
+                    ScaricaTesseraAction::make(),
                     EditAction::make()->hiddenLabel(),
                     DeleteAction::make()
                         ->hiddenLabel()
                         ->hidden(fn (?Adesione $record): bool => $record?->anno < (int) date('Y')),
-                ])->button()->hiddenLabel(),
+                ])
+                    ->button()
+                    ->hiddenLabel(),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make(),

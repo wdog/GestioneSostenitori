@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('nome');
             $table->string('cognome');
             $table->string('email')->nullable()->unique();
+            $table->string('mobile')->nullable()->unique();
             $table->timestamps();
         });
     }

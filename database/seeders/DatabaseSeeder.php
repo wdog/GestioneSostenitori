@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use Carbon\Carbon;
 use App\Models\User;
-use App\Models\Sostenitore;
 use App\Models\Livello;
 use App\Models\Adesione;
+use App\Models\Sostenitore;
 use App\Enums\StatoAdesione;
 use App\Models\Impostazione;
 use Illuminate\Database\Seeder;
@@ -54,8 +54,8 @@ class DatabaseSeeder extends Seeder
             'Ferraro', 'Ferri', 'Fabbri', 'Bianco', 'Marini', 'Grasso', 'Valentini',
         ];
 
-        $sostenitori       = [];
-        $usedEmails = [];
+        $sostenitori = [];
+        $usedEmails  = [];
 
         for ($i = 0; $i < 100; $i++) {
             $nome    = $nomi[array_rand($nomi)];
@@ -99,7 +99,7 @@ class DatabaseSeeder extends Seeder
                 $stato = $anno < $currentYear ? StatoAdesione::Scaduta : StatoAdesione::Attiva;
 
                 Adesione::create([
-                    'sostenitore_id'        => $sostenitore->id,
+                    'sostenitore_id'  => $sostenitore->id,
                     'livello_id'      => $livello->id,
                     'anno'            => $anno,
                     'stato'           => $stato,

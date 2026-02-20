@@ -30,9 +30,9 @@ class TesseraInviata extends Mailable implements ShouldQueue
         return new Content(
             view: 'emails.tessera-inviata',
             with: [
-                'sostenitore'   => $this->adesione->sostenitore,
-                'livello' => $this->adesione->livello,
-                'anno'    => $this->adesione->anno,
+                'sostenitore' => $this->adesione->sostenitore,
+                'livello'     => $this->adesione->livello,
+                'anno'        => $this->adesione->anno,
             ],
         );
     }
