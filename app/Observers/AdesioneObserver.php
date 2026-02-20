@@ -14,6 +14,7 @@ class AdesioneObserver
 
     public function updated(Adesione $adesione): void
     {
-        SendTelegramNotification::dispatch('notifyAdesioneModificata', [$adesione]);
+        $campiModificati = array_keys($adesione->getDirty());
+        SendTelegramNotification::dispatch('notifyAdesioneModificata', [$adesione, $campiModificati]);
     }
 }

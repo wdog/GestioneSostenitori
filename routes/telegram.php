@@ -3,12 +3,8 @@
 /** @var SergiX44\Nutgram\Nutgram $bot */
 
 use SergiX44\Nutgram\Nutgram;
-use App\Telegram\Commands\menu;
 use App\Telegram\Commands\MenuCommand;
 use App\Services\TelegramNotificationService;
-use SergiX44\Nutgram\Telegram\Properties\ParseMode;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +22,6 @@ $bot->onCommand('start', function (Nutgram $bot) {
 })
     ->description('Il tuo ID');
 
-
 $bot->onCommand('menu', MenuCommand::class)
     ->description('Menu Principale');
 
@@ -37,9 +32,9 @@ $bot->onCallbackQuery(function (Nutgram $bot) {
     match ($data) {
         'menu:summary_sostenitori' => $service->summarySostenitori($chatId),
         'menu:summary_adesioni'    => $service->summaryAdesioni($chatId),
-        default               => null,
+        default                    => null,
     };
     $bot->answerCallbackQuery();
 });
 
-$bot->fallback(fn(Nutgram $bot) => $bot->sendMessage('Non so come aiutarti. Prova /menu'));
+$bot->fallback(fn (Nutgram $bot) => $bot->sendMessage('Non so come aiutarti. Prova /menu'));

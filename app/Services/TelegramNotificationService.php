@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Enums\StatoAdesione;
 use App\Models\User;
 use App\Models\Adesione;
 use App\Models\Sostenitore;
+use App\Enums\StatoAdesione;
 use App\Models\Impostazione;
 use SergiX44\Nutgram\Nutgram;
 use Illuminate\Support\Facades\Log;
@@ -49,15 +49,19 @@ class TelegramNotificationService
 
     protected function send(string $message, $parse_mode = ParseMode::HTML): void
     {
-        if (! $this->isEnabled()) {
+        if ( ! $this->isEnabled()) {
             return;
         }
+
+        Log::debug('Telegram notification enabled!');
 
         $recipients = $this->getRecipients();
 
         if (empty($recipients)) {
             return;
         }
+
+        Log::debug('Telegram notification with recipients: ' . implode(', ', $recipients));
 
         foreach ($recipients as $chatId) {
             try {
@@ -80,7 +84,7 @@ class TelegramNotificationService
     public function notifyNuovoSostenitore(Sostenitore $sostenitore): void
     {
         $totaleSostenitori = Sostenitore::count();
-        $data = $sostenitore->created_at->format('d/m/Y H:i');
+        $data              = $sostenitore->created_at->format('d/m/Y H:i');
 
         $message = "🆕  <b>NUOVO SOSTENITORE</b>\n"
             . "\n"
@@ -100,26 +104,13 @@ class TelegramNotificationService
 
     public function notifySostenitoreModificato(Sostenitore $sostenitore): void
     {
-        $dirty           = $sostenitore->getChanges();
-        $campiModificati = collect($dirty)
-            ->except(['updated_at'])
-            ->keys()
-            ->map(fn(string $campo) => match ($campo) {
-                'nome'    => '📝 Nome',
-                'cognome' => '📝 Cognome',
-                'email'   => '✉️ Email',
-                default   => $campo,
-            })
-            ->implode(', ');
-
         $message = "✏️  <b>SOSTENITORE MODIFICATO</b>\n"
             . "\n"
             . "👤  <b>{$sostenitore->nome} {$sostenitore->cognome}</b>\n"
             . "\n"
             . "✉️  Email: {$sostenitore->email}\n"
-            . "🔄  Campi: {$campiModificati}\n"
             . "\n"
-            . "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n"
+            . "-----\n"
             . "\n"
             . "🏛  <i>{$this->nomeAssociazione()}</i>\n";
 
@@ -144,7 +135,7 @@ class TelegramNotificationService
             . "🎫  Tessera:  <code>{$adesione->codice_tessera}</code>\n"
             . "📌  Stato:    {$adesione->stato->getLabel()}\n"
             . "\n"
-            . "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n"
+            . "-----\n"
             . "\n"
             . "📊  Adesioni {$adesione->anno}: <b>{$adesioniAnno}</b>\n"
             . "\n"
@@ -159,20 +150,6 @@ class TelegramNotificationService
         $livello     = $adesione->livello;
         $importo     = $adesione->importo_versato ? number_format($adesione->importo_versato, 2, ',', '.') . ' €' : 'Non specificato';
 
-        $dirty           = $adesione->getChanges();
-        $campiModificati = collect($dirty)
-            ->except(['updated_at'])
-            ->keys()
-            ->map(fn(string $campo) => match ($campo) {
-                'livello_id'      => '🏅 Livello',
-                'stato'           => '📌 Stato',
-                'importo_versato' => '💰 Importo',
-                'tessera_path'    => '🎫 Tessera',
-                'codice_tessera'  => '🎫 Codice',
-                default           => $campo,
-            })
-            ->implode(', ');
-
         $message = "✏️  <b>ADESIONE MODIFICATA</b>\n"
             . "\n"
             . "👤  <b>{$sostenitore->nome} {$sostenitore->cognome}</b>\n"
@@ -182,15 +159,12 @@ class TelegramNotificationService
             . "💰  Importo:  <b>{$importo}</b>\n"
             . "📌  Stato:    {$adesione->stato->getLabel()}\n"
             . "\n"
-            . "🔄  Modifiche: {$campiModificati}\n"
-            . "\n"
-            . "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n"
+            . "-----\n"
             . "\n"
             . "🏛  <i>{$this->nomeAssociazione()}</i>\n";
 
         $this->send($message);
     }
-
 
     public function menu(int|string $chatId): void
     {
@@ -210,7 +184,7 @@ class TelegramNotificationService
 
         $this->bot()->sendMessage(
             chat_id: $chatId,
-            text: "📋 *Menu Report*",
+            text: '📋 *Menu Report*',
             parse_mode: 'Markdown',
             reply_markup: $keyboard
         );
@@ -233,7 +207,7 @@ class TelegramNotificationService
             ->selectRaw('anno, COUNT(*) as total')
             ->whereIn('stato', StatoAdesione::pagate())
             ->groupBy('anno')
-            ->orderBy("anno", 'desc')
+            ->orderBy('anno', 'desc')
             ->pluck('total', 'anno');
 
         $text = "📈 *Adesioni per anno*\n\n";
