@@ -17,7 +17,9 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
+use App\Filament\Actions\InviaTesseraAction;
 use Filament\Forms\Components\ToggleButtons;
+use App\Filament\Actions\ScaricaTesseraAction;
 use Filament\Resources\RelationManagers\RelationManager;
 
 class AdesioniRelationManager extends RelationManager
@@ -113,6 +115,8 @@ class AdesioniRelationManager extends RelationManager
             ])
             ->recordActions([
                 ActionGroup::make([
+                    InviaTesseraAction::make(),
+                    ScaricaTesseraAction::make(),
                     EditAction::make()->hiddenLabel(),
                     DeleteAction::make()
                         ->hiddenLabel()

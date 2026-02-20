@@ -8,26 +8,23 @@ use App\Models\Adesione;
 use Filament\Tables\Table;
 use App\Models\Sostenitore;
 use App\Enums\StatoAdesione;
-use App\Mail\TesseraInviata;
-use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Resources\Resource;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Illuminate\Support\HtmlString;
-use App\Services\TesseraPdfService;
-use Illuminate\Support\Facades\Mail;
 use Filament\Forms\Components\Select;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Actions\InviaTesseraAction;
 use Filament\Forms\Components\ToggleButtons;
+use App\Filament\Actions\ScaricaTesseraAction;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use App\Filament\Resources\AdesioneResource\Pages\EditAdesione;
@@ -219,35 +216,8 @@ class AdesioneResource extends Resource
             // ->recordUrl(null)
             ->recordActions([
                 ActionGroup::make([
-                    Action::make('scarica_pdf')
-                        ->label('PDF')
-                        ->icon('heroicon-s-arrow-down-tray')
-                        ->color('info')
-                        ->action(function (Adesione $record) {
-                            $service = resolve(TesseraPdfService::class);
-
-                            return $service->download($record);
-                        }),
-                    Action::make('invia_email')
-                        ->label('Email')
-                        ->icon('heroicon-s-envelope')
-                        ->color('success')
-                        ->requiresConfirmation()
-                        ->modalHeading('Invia tessera via email')
-                        ->modalDescription('Vuoi inviare la tessera al sostenitore via email?')
-                        ->action(function (Adesione $record) {
-                            $service = resolve(TesseraPdfService::class);
-                            if ( ! $record->tessera_path) {
-                                $service->genera($record);
-                                $record->refresh();
-                            }
-                            Mail::to($record->sostenitore->email)->queue(new TesseraInviata($record));
-                            Notification::make()
-                                ->title('Email inviata')
-                                ->body("Tessera inviata a {$record->sostenitore->email}")
-                                ->success()
-                                ->send();
-                        }),
+                    ScaricaTesseraAction::make(),
+                    InviaTesseraAction::make(),
                     EditAction::make()
                         ->hiddenLabel(),
                     DeleteAction::make()
