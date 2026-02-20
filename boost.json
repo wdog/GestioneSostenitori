@@ -2,8 +2,16 @@
     "agents": [
         "claude_code"
     ],
-    "editors": [
-        "claude_code"
+    "guidelines": true,
+    "herd_mcp": false,
+    "mcp": true,
+    "nightwatch_mcp": false,
+    "packages": [
+        "filament/filament",
+        "tightenco/duster"
     ],
-    "guidelines": true
+    "sail": false,
+    "skills": [
+        "tailwindcss-development"
+    ]
 }
