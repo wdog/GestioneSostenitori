@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use BackedEnum;
-use App\Models\User;
 use App\Models\Livello;
 use App\Models\Adesione;
 use Filament\Tables\Table;
@@ -70,9 +69,9 @@ class AdesioneResource extends Resource
                             ->relationship(
                                 name: 'sostenitore',
                                 titleAttribute: 'nome',
-                                modifyQueryUsing: fn(Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
+                                modifyQueryUsing: fn (Builder $query) => $query->orderBy('cognome')->orderBy('nome'),
                             )
-                            ->getOptionLabelFromRecordUsing(fn(Sostenitore $record) => "{$record->fullName}")
+                            ->getOptionLabelFromRecordUsing(fn (Sostenitore $record) => "{$record->fullName}")
                             ->preload()
                             ->searchable(['nome', 'cognome', 'email'])
                             ->required()
@@ -89,14 +88,14 @@ class AdesioneResource extends Resource
                                     ->unique('sostenitori', 'email')
                                     ->maxLength(255),
                             ])
-                            ->createOptionUsing(fn(array $data): int => Sostenitore::create($data)->id),
+                            ->createOptionUsing(fn (array $data): int => Sostenitore::create($data)->id),
 
                         Select::make('livello_id')
                             ->prefixIcon('heroicon-s-star')
                             ->prefixIconColor('success')
                             ->label('Livello')
                             ->searchable()
-                            ->options(fn() => Livello::query()->active()->pluck('nome', 'id'))
+                            ->options(fn () => Livello::query()->active()->pluck('nome', 'id'))
                             ->disabled($cannotChange)
                             ->required(),
 
@@ -130,7 +129,7 @@ class AdesioneResource extends Resource
                             ->unique(
                                 table: Adesione::class,
                                 ignoreRecord: true, // Ignora il record corrente in edit
-                                modifyRuleUsing: fn(Unique $rule, Get $get) => $rule
+                                modifyRuleUsing: fn (Unique $rule, Get $get) => $rule
                                     ->where('sostenitore_id', $get('sostenitore_id'))
                             )
                             ->minValue(2000)
@@ -164,14 +163,14 @@ class AdesioneResource extends Resource
             ->columns([
                 TextColumn::make('anno')
                     ->sortable()
-                    ->description(fn($record): HtmlString => new HtmlString(
+                    ->description(fn ($record): HtmlString => new HtmlString(
                         '<span class="text-amber-500">' . e($record->livello->nome) . '</span>'
                     ))
                     ->searchable(),
 
                 TextColumn::make('sostenitore.full_name')
                     ->label('Sostenitore')
-                    ->description(fn($record) => $record->sostenitore->email)
+                    ->description(fn ($record) => $record->sostenitore->email)
                     ->searchable(['nome', 'cognome'])
                     ->color('primary')
                     ->weight(FontWeight::Bold)
@@ -202,7 +201,7 @@ class AdesioneResource extends Resource
             ->filters([
                 SelectFilter::make('anno')
                     ->options(
-                        fn() => Adesione::query()
+                        fn () => Adesione::query()
                             ->distinct()
                             ->pluck('anno', 'anno')
                             ->sortDesc()
@@ -213,7 +212,7 @@ class AdesioneResource extends Resource
                     ->label('Livello')
                     ->relationship('livello', 'nome'),
                 SelectFilter::make('stato')
-                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn($s) => [$s->value => $s->getLabel()])),
+                    ->options(collect(StatoAdesione::cases())->mapWithKeys(fn ($s) => [$s->value => $s->getLabel()])),
             ])
             ->filtersFormColumns(3)
             ->persistFiltersInSession()
@@ -240,7 +239,7 @@ class AdesioneResource extends Resource
                         ->action(function (Adesione $record) {
                             $service = resolve(TesseraPdfService::class);
 
-                            if (! $record->tessera_path) {
+                            if ( ! $record->tessera_path) {
                                 $service->genera($record);
                                 $record->refresh();
                             }
@@ -257,7 +256,7 @@ class AdesioneResource extends Resource
                         ->hiddenLabel(),
                     DeleteAction::make()
                         ->hiddenLabel()
-                        ->hidden(fn(?Adesione $record): bool => $record?->anno < (int) date('Y')),
+                        ->hidden(fn (?Adesione $record): bool => $record?->anno < (int) date('Y')),
                 ])->button()->hiddenLabel(),
             ])
             ->groupedBulkActions([

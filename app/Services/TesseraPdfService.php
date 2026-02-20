@@ -23,8 +23,8 @@ class TesseraPdfService
         // dd($adesione->livello->toArray());
 
         $pdf = Pdf::loadView($template, [
-            'adesione' => $adesione,
-            'sostenitore'    => [
+            'adesione'    => $adesione,
+            'sostenitore' => [
                 'nome'            => $adesione->sostenitore->nome,
                 'cognome'         => $adesione->sostenitore->cognome,
                 'codice'          => $adesione->codice_tessera,

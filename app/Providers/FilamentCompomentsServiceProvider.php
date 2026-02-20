@@ -28,7 +28,7 @@ class FilamentCompomentsServiceProvider extends ServiceProvider
         Filament::serving(function () {
             Filament::registerRenderHook(
                 PanelsRenderHook::BODY_START,
-                fn(): string => Blade::render('@vite(["resources/js/app.js", "resources/css/app.css"])'),
+                fn (): string => Blade::render('@vite(["resources/js/app.js", "resources/css/app.css"])'),
             );
         });
 
@@ -38,7 +38,6 @@ class FilamentCompomentsServiceProvider extends ServiceProvider
             $component->trim();
         });
 
-
         $this->registerTextColumnMacros();
     }
 
@@ -47,7 +46,7 @@ class FilamentCompomentsServiceProvider extends ServiceProvider
         TextColumn::macro('moneyEUR', function (): TextColumn {
             /** @var TextColumn $this */
             return $this->formatStateUsing(
-                fn($state): string => $state !== null
+                fn ($state): string => $state !== null
                     ? '€ ' . number_format((float) $state, 2, ',', '.')
                     : '—'
             );

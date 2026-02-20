@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Sostenitore;
 use App\Models\Livello;
 use App\Models\Adesione;
+use App\Models\Sostenitore;
 use App\Enums\StatoAdesione;
 use Illuminate\Database\Seeder;
 
@@ -38,8 +38,8 @@ class DemoDataSeeder extends Seeder
             'Ferraro', 'Ferri', 'Fabbri', 'Bianco', 'Marini', 'Grasso', 'Valentini',
         ];
 
-        $sostenitori       = [];
-        $usedEmails = [];
+        $sostenitori = [];
+        $usedEmails  = [];
 
         for ($i = 0; $i < 100; $i++) {
             $nome    = $nomi[array_rand($nomi)];
@@ -75,10 +75,10 @@ class DemoDataSeeder extends Seeder
                 $stato = $anno < $currentYear ? StatoAdesione::Scaduta : StatoAdesione::Attiva;
 
                 Adesione::create([
-                    'sostenitore_id'   => $sostenitore->id,
-                    'livello_id' => $livello->id,
-                    'anno'       => $anno,
-                    'stato'      => $stato,
+                    'sostenitore_id' => $sostenitore->id,
+                    'livello_id'     => $livello->id,
+                    'anno'           => $anno,
+                    'stato'          => $stato,
                 ]);
             }
         }
