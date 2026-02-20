@@ -22,7 +22,9 @@ class IncassoAnniWidget extends ChartWidget
         $rows = Adesione::query()
             ->whereIn('anno', $anni)
             ->selectRaw('anno, stato, SUM(importo_versato) / 100.0 as totale')
+            ->whereIn('stato', [StatoAdesione::Attiva, StatoAdesione::Scaduta])
             ->groupBy('anno', 'stato')
+
             ->get()
             ->groupBy('anno');
 
@@ -53,9 +55,9 @@ class IncassoAnniWidget extends ChartWidget
         foreach ($anni as $anno) {
             $annoRows = $rows->get($anno, collect())->keyBy('stato');
 
-            foreach (StatoAdesione::cases() as $stato) {
-                $datasets[$stato->value]['data'][] = round(
-                    (float) ($annoRows->get($stato->value)?->totale ?? 0),
+            foreach (array_keys($datasets) as $statoValue) {
+                $datasets[$statoValue]['data'][] = round(
+                    (float) ($annoRows->get($statoValue)?->totale ?? 0),
                     2
                 );
             }

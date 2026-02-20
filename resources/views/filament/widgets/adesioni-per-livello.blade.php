@@ -11,29 +11,20 @@
                 @foreach ($livelli as $livello)
                     @php
                         $percentuale = $totale > 0 ? round(($livello->conteggio / $totale) * 100) : 0;
-                        $color = $livello->color_primary ?? '#6b7280';
                     @endphp
+
                     <div class="flex items-center justify-between gap-3">
                         <div class="flex items-center gap-2 min-w-0">
-                            <span
-                                class="inline-block h-3 w-3 shrink-0 rounded-full"
-                                style="background-color: {{ $color }}"
-                            ></span>
-                            <span class="truncate text-sm font-medium text-gray-900 dark:text-white">
+                            <span class="text-sm font-medium ">
                                 {{ $livello->nome }}
                             </span>
                         </div>
                         <div class="flex items-center gap-3 shrink-0">
-                            <div class="w-24 h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                                <div
-                                    class="h-full rounded-full"
-                                    style="width: {{ $percentuale }}%; background-color: {{ $color }}"
-                                ></div>
+                            <div class="w-24 h-1.5 rounded-full bg-gray-300!">
+                                <div class="h-full rounded-full bg-lime-500!" style="width: {{ $percentuale }}%"></div>
                             </div>
                             <span
-                                class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold text-white min-w-[2rem] justify-center"
-                                style="background-color: {{ $color }}"
-                            >
+                                class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold min-w-8 justify-center bg-lime-500 ">
                                 {{ $livello->conteggio }}
                             </span>
                         </div>

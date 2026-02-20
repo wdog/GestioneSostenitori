@@ -94,7 +94,7 @@ class AdesioniRelationManager extends RelationManager
                         $classes = match ($record->stato) {
                             StatoAdesione::Attiva            => 'bg-green-500/10 text-green-500',
                             StatoAdesione::PagamentoPendente => 'bg-amber-500/10 text-amber-500',
-                            StatoAdesione::Scaduta           => 'bg-red-500/10 text-red-500',
+                            default                          => 'bg-red-500/10 text-red-500',
                         };
 
                         return new HtmlString(
