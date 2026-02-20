@@ -3,16 +3,17 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Adesione;
+use Filament\Support\RawJs;
 use App\Enums\StatoAdesione;
 use Filament\Widgets\ChartWidget;
 
 class IncassoAnniWidget extends ChartWidget
 {
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 2;
 
     protected ?string $heading = 'Incassi per Anno';
 
-    protected int|string|array $columnSpan = 2;
+    protected int|string|array $columnSpan = 3;
 
     protected function getData(): array
     {
@@ -71,25 +72,18 @@ class IncassoAnniWidget extends ChartWidget
         return 'bar';
     }
 
-    protected function getOptions(): array
+    protected function getOptions(): RawJs
     {
-        return [
-            'scales' => [
-                'x' => ['stacked' => true],
-                'y' => [
-                    'stacked' => true,
-                    'ticks'   => [
-                        'callback' => "function(value) { return '€ ' + value.toFixed(2); }",
-                    ],
-                ],
-            ],
-            'plugins' => [
-                'tooltip' => [
-                    'callbacks' => [
-                        'label' => "function(ctx) { return ctx.dataset.label + ': € ' + ctx.parsed.y.toFixed(2); }",
-                    ],
-                ],
-            ],
-        ];
+        return RawJs::make(<<<'JS'
+            {
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true},
+                },
+                plugins: {
+                    datalabels: { display: false },
+                },
+            }
+        JS);
     }
 }

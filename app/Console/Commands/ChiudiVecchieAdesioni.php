@@ -16,6 +16,8 @@ class ChiudiVecchieAdesioni extends Command
     {
         $currentYear = (int) date('Y');
 
+        // tutto ciò che è di anni precedenti a quello corrente
+        // e che stato pagato, lo segno come scaduto
         $updated = Adesione::query()
             ->where('anno', '<', $currentYear)
             ->where('stato', StatoAdesione::Attiva)
@@ -23,6 +25,8 @@ class ChiudiVecchieAdesioni extends Command
 
         $this->info("Adesioni scadute Attive: {$updated}");
 
+        // tutto cio che e' scaduto ma non e' stato pagato,
+        // lo segno come scaduto e azzero l'importo versato
         $updated = Adesione::query()
             ->where('anno', '<', $currentYear)
             ->where('stato', StatoAdesione::PagamentoPendente)

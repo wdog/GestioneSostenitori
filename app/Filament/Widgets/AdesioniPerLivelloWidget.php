@@ -12,7 +12,7 @@ class AdesioniPerLivelloWidget extends Widget
 
     protected static ?int $sort = 2;
 
-    protected int|string|array $columnSpan = 1;
+    protected int|string|array $columnSpan = 3;
 
     protected string $view = 'filament.widgets.adesioni-per-livello';
 

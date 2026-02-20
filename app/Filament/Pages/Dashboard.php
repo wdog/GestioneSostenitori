@@ -13,6 +13,11 @@ class Dashboard extends BaseDashboard
 {
     use HasFiltersForm;
 
+    public function getColumns(): int|array
+    {
+        return 3;
+    }
+
     public function filtersForm(Schema $schema): Schema
     {
         $anni = Adesione::query()
