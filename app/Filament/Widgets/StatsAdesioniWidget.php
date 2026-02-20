@@ -13,7 +13,7 @@ class StatsAdesioniWidget extends StatsOverviewWidget
 
     protected static ?int $sort = 1;
 
-    protected int|string|array $columnSpan = 3;
+    protected int|string|array $columnSpan = 4;
 
     protected function getStats(): array
     {
@@ -23,6 +23,12 @@ class StatsAdesioniWidget extends StatsOverviewWidget
 
         $incassato = Adesione::query()
             ->where('anno', $anno)
+            ->whereIn('stato', [\App\Enums\StatoAdesione::Attiva, \App\Enums\StatoAdesione::Scaduta])
+            ->sum('importo_versato') / 100;
+
+        $pending = Adesione::query()
+            ->where('anno', $anno)
+            ->whereNotIn('stato', [\App\Enums\StatoAdesione::Attiva, \App\Enums\StatoAdesione::Scaduta])
             ->sum('importo_versato') / 100;
 
         return [
@@ -30,12 +36,17 @@ class StatsAdesioniWidget extends StatsOverviewWidget
             Stat::make("Adesioni {$anno}", $totale)
                 ->description('Totale sottoscrizioni')
                 ->descriptionIcon('heroicon-s-document-text')
-                ->color('primary'),
+                ->color('info'),
 
-            Stat::make('Incassato', '€ ' . number_format($incassato, 2, ',', '.'))
+            Stat::make('Cassa', '€ ' . number_format($incassato, 2, ',', '.'))
                 ->description('Adesioni Incassate')
                 ->descriptionIcon('heroicon-s-check-circle')
                 ->color('success'),
+
+            Stat::make('Pendenti', '€ ' . number_format($pending, 2, ',', '.'))
+                ->description('Adesioni Pendenti')
+                ->descriptionIcon('heroicon-s-check-circle')
+                ->color('warning'),
 
         ];
     }

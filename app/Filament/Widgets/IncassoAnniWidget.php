@@ -13,59 +13,55 @@ class IncassoAnniWidget extends ChartWidget
 
     protected ?string $heading = 'Incassi per Anno';
 
-    protected int|string|array $columnSpan = 3;
+    protected int|string|array $columnSpan = 1;
 
     protected function getData(): array
     {
-        $anni = range((int) date('Y') - 4, (int) date('Y'));
-
         $rows = Adesione::query()
-            ->whereIn('anno', $anni)
             ->selectRaw('anno, stato, SUM(importo_versato) / 100.0 as totale')
             ->whereIn('stato', [StatoAdesione::Attiva, StatoAdesione::Scaduta])
             ->groupBy('anno', 'stato')
+            ->orderBy('anno')
+            ->get();
 
-            ->get()
-            ->groupBy('anno');
+        // dd($rows->toArray());
 
         $datasets = [
-            StatoAdesione::Attiva->value => [
-                'label'           => StatoAdesione::Attiva->getLabel(),
+            'incasso' => [
+                'label'           => 'Cassa',
                 'data'            => [],
-                'backgroundColor' => 'rgba(16, 185, 129, 0.7)',
-                'borderColor'     => 'rgb(16, 185, 129)',
-                'borderWidth'     => 1,
-            ],
-            StatoAdesione::PagamentoPendente->value => [
-                'label'           => StatoAdesione::PagamentoPendente->getLabel(),
-                'data'            => [],
-                'backgroundColor' => 'rgba(245, 158, 11, 0.7)',
-                'borderColor'     => 'rgb(245, 158, 11)',
-                'borderWidth'     => 1,
-            ],
-            StatoAdesione::Scaduta->value => [
-                'label'           => StatoAdesione::Scaduta->getLabel(),
-                'data'            => [],
-                'backgroundColor' => 'rgba(244, 63, 94, 0.7)',
-                'borderColor'     => 'rgb(244, 63, 94)',
-                'borderWidth'     => 1,
+                'backgroundColor' => [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(255, 159, 64, 0.8)',
+                    'rgba(255, 205, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(201, 203, 207, 0.8)',
+                ],
+                'borderColor' => [
+                    'rgb(255, 99, 132)',
+                    'rgb(255, 159, 64)',
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)',
+                    'rgb(54, 162, 235)',
+                    'rgb(153, 102, 255)',
+                    'rgb(201, 203, 207)',
+                ],
+                'borderWidth'   => 1,
+                'borderRadius'  => 6,
+                'barPercentage' => 1.22,
             ],
         ];
 
-        foreach ($anni as $anno) {
-            $annoRows = $rows->get($anno, collect())->keyBy('stato');
-
-            foreach (array_keys($datasets) as $statoValue) {
-                $datasets[$statoValue]['data'][] = round(
-                    (float) ($annoRows->get($statoValue)?->totale ?? 0),
-                    2
-                );
-            }
+        foreach ($rows as $anno) {
+            $incasso                       = $anno->totale;
+            $datasets['incasso']['data'][] = round(($incasso ?? 0), 2);
         }
 
         return [
             'datasets' => array_values($datasets),
-            'labels'   => array_map('strval', $anni),
+            'labels'   => array_map('strval', $rows->pluck('anno')->all()),
         ];
     }
 
