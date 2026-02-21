@@ -48,4 +48,9 @@ class User extends Authenticatable
             'telegram_notifications_enabled' => 'boolean',
         ];
     }
+    /** {@inheritDoc} */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
+    }
 }
