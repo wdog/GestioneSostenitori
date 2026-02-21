@@ -112,7 +112,7 @@ class LivelloResource extends Resource
                     ->columnSpanFull()
                     ->schema([
                         View::make('filament.components.card-preview')
-                            ->viewData(fn($get) => [
+                            ->viewData(fn ($get) => [
                                 'color_primary'   => $get('color_primary'),
                                 'color_secondary' => $get('color_secondary'),
                                 'color_accent'    => $get('color_accent'),
@@ -131,7 +131,7 @@ class LivelloResource extends Resource
             ->columns([
                 TextColumn::make('nome')
                     ->searchable()
-                    ->description(fn(Livello $record) => $record->descrizione)
+                    ->description(fn (Livello $record) => $record->descrizione)
                     ->weight(FontWeight::Bold)
                     ->sortable(),
                 TextColumn::make('importo_suggerito')

@@ -18,9 +18,21 @@ use App\Services\TelegramNotificationService;
 
 $bot->onCommand('start', function (Nutgram $bot) {
     $chatId = $bot->chatId();
-    $bot->sendMessage("Ciao! Il tuo Chat ID è: <b>{$chatId}</b>\n\nUsalo per configurare le notifiche nel pannello admin.", parse_mode: \SergiX44\Nutgram\Telegram\Properties\ParseMode::HTML);
+    $bot->sendMessage(
+        text: "Ciao valoroso Prog Lover! Il tuo Chat ID è: <b>{$chatId}</b>\n\nUsalo per configurare le notifiche nel pannello admin.",
+        parse_mode: \SergiX44\Nutgram\Telegram\Properties\ParseMode::HTML,
+    );
 })
     ->description('Il tuo ID');
+
+$bot->onCommand('id', function (Nutgram $bot) {
+    $chatId = $bot->chatId();
+    $bot->sendMessage(
+        text: "Chat ID: <b>{$chatId}</b>\n\nUsalo per configurare le notifiche nel pannello admin.",
+        parse_mode: \SergiX44\Nutgram\Telegram\Properties\ParseMode::HTML,
+    );
+})
+    ->description('ID di questa chat');
 
 $bot->onCommand('menu', MenuCommand::class)
     ->description('Menu Principale');
