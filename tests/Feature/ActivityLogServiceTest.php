@@ -1,11 +1,11 @@
 <?php
 
+use App\Models\User;
 use App\Models\ActivityLog;
 use App\Models\Sostenitore;
-use App\Models\User;
 use App\Services\ActivityLogService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
@@ -22,7 +22,7 @@ test('crea un record nel log con evento e utente', function () {
 
 test('salva old_data e new_data come array', function () {
     ActivityLogService::log(
-        event:   'sostenitore.modificato',
+        event: 'sostenitore.modificato',
         newData: ['email' => 'nuovo@test.com'],
         oldData: ['email' => 'vecchio@test.com'],
     );
@@ -36,7 +36,7 @@ test('salva subject_type e subject_id quando viene passato un modello', function
     $sostenitore = Sostenitore::factory()->create();
 
     ActivityLogService::log(
-        event:   'sostenitore.creato',
+        event: 'sostenitore.creato',
         newData: ['nome' => $sostenitore->nome],
         subject: $sostenitore,
     );

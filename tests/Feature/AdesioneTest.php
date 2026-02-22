@@ -1,19 +1,19 @@
 <?php
 
-use App\Enums\StatoAdesione;
-use App\Models\Adesione;
 use App\Models\Livello;
+use App\Models\Adesione;
 use App\Models\Sostenitore;
+use App\Enums\StatoAdesione;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->sostenitore = Sostenitore::factory()->create();
-    $this->livello = Livello::create([
-        'nome'               => 'Base',
-        'importo_suggerito'  => 1000,
-        'is_active'          => true,
+    $this->livello     = Livello::create([
+        'nome'              => 'Base',
+        'importo_suggerito' => 1000,
+        'is_active'         => true,
     ]);
 });
 
