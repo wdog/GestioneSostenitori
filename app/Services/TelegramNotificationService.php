@@ -32,7 +32,7 @@ class TelegramNotificationService
             . "✉️  Email: {$sostenitore->email}\n"
             . "📅  Registrato il: {$data}\n"
             . "\n"
-            . "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n"
+            . "------\n"
             . "\n"
             . "📊  Totale sostenitori: <b>{$totaleSostenitori}</b>\n"
             . "\n"
