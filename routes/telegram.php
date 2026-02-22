@@ -12,4 +12,9 @@ $bot->onCommand('menu', MainMenu::class)
     ->description('Apri il menu principale');
 
 
-$bot->fallback(fn(Nutgram $bot) => $bot->sendMessage('Non so come farlo. Prova a cercare nel /menu.'));
+$bot->fallback(function (Nutgram $bot) {
+    $text = $bot->message()?->text ?? '';
+    if (str_starts_with($text, '/')) {
+        $bot->sendMessage('Non so come farlo. Prova a cercare nel /menu.');
+    }
+});
