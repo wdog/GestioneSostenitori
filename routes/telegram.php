@@ -15,9 +15,9 @@ $bot->onCommand('menu', MainMenu::class)
 
 $bot->fallback(function (Nutgram $bot) {
     $text = $bot->message()?->text ?? '';
-    Log::debug($text);
+    Log::info($text);
     if (str_starts_with($text, '/')) {
-        Log::debug("MATCH " . $text);
+        Log::info("MATCH " . $text);
         $bot->sendMessage('Non so come farlo. Prova a cercare nel /menu.');
     }
 });
