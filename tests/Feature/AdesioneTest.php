@@ -150,3 +150,19 @@ test('codice_tessera personalizzato non viene sovrascritto alla creazione', func
 
     expect($adesione->codice_tessera)->toBe('ABCDE');
 });
+
+test('lo stesso sostenitore non può avere due adesioni per lo stesso anno', function () {
+    Adesione::create([
+        'sostenitore_id' => $this->sostenitore->id,
+        'livello_id'     => $this->livello->id,
+        'anno'           => now()->year,
+        'stato'          => StatoAdesione::Attiva,
+    ]);
+
+    Adesione::create([
+        'sostenitore_id' => $this->sostenitore->id,
+        'livello_id'     => $this->livello->id,
+        'anno'           => now()->year,
+        'stato'          => StatoAdesione::Attiva,
+    ]);
+})->throws(\Illuminate\Database\QueryException::class);
