@@ -11,4 +11,7 @@ $bot->registerCommand(StartCommand::class);
 $bot->onCommand('menu', MainMenu::class)
     ->description('Apri il menu principale');
 
+// Nei gruppi Telegram i comandi arrivano come /menu@botname
+$bot->onText('/menu@\w+', MainMenu::class);
+
 $bot->fallback(fn (Nutgram $bot) => $bot->sendMessage('Non so come farlo. Prova a cercare nel /menu.'));
