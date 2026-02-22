@@ -48,3 +48,44 @@ test('salva subject_type e subject_id quando viene passato un modello', function
         ->and($log->subject_type)->toBe('Sostenitore')
         ->and($log->subject_id)->toBe($sostenitore->id);
 });
+
+test('log senza subject ha subject_type e subject_id null', function () {
+    ActivityLogService::log('login');
+
+    $log = ActivityLog::where('event', 'login')->first();
+    expect($log->subject_type)->toBeNull()
+        ->and($log->subject_id)->toBeNull();
+});
+
+test('log con adesione come subject salva subject_type Adesione', function () {
+    $sostenitore = Sostenitore::factory()->create();
+    $livello     = \App\Models\Livello::create([
+        'nome' => 'Base', 'importo_suggerito' => 10, 'is_active' => true,
+    ]);
+    $adesione = \App\Models\Adesione::create([
+        'sostenitore_id' => $sostenitore->id,
+        'livello_id'     => $livello->id,
+        'anno'           => now()->year,
+        'stato'          => \App\Enums\StatoAdesione::Attiva,
+    ]);
+
+    ActivityLogService::log('tessera.inviata', subject: $adesione);
+
+    $log = ActivityLog::where('event', 'tessera.inviata')
+        ->where('subject_id', $adesione->id)
+        ->first();
+    expect($log->subject_type)->toBe('Adesione');
+});
+
+test('log con new_data multipli salva tutti i campi', function () {
+    ActivityLogService::log('test', newData: [
+        'campo1' => 'valore1',
+        'campo2' => 'valore2',
+        'campo3' => 'valore3',
+    ]);
+
+    $log = ActivityLog::first();
+    expect($log->new_data)->toHaveCount(3)
+        ->and($log->new_data['campo1'])->toBe('valore1')
+        ->and($log->new_data['campo3'])->toBe('valore3');
+});

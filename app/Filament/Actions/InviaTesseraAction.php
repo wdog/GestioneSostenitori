@@ -3,6 +3,7 @@
 namespace App\Filament\Actions;
 
 use App\Models\Adesione;
+use App\Enums\StatoAdesione;
 use App\Mail\TesseraInviata;
 use Filament\Actions\Action;
 use App\Services\TesseraPdfService;
@@ -26,6 +27,10 @@ class InviaTesseraAction extends Action
             ->label('Email')
             ->icon('heroicon-s-envelope')
             ->color('success')
+            ->hidden(fn (Adesione $record): bool => in_array($record->stato, [
+                StatoAdesione::PagamentoPendente,
+                StatoAdesione::Annullata,
+            ]))
             ->requiresConfirmation()
             ->modalHeading('Invia tessera via email')
             ->modalDescription('Vuoi inviare la tessera al sostenitore via email?')

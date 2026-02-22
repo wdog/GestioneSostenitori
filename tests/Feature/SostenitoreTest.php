@@ -26,3 +26,33 @@ test('la email deve essere unica', function () {
     Sostenitore::factory()->create(['email' => 'mario@test.com']);
     Sostenitore::factory()->create(['email' => 'mario@test.com']);
 })->throws(\Illuminate\Database\QueryException::class);
+
+test('il campo mobile è opzionale', function () {
+    $sostenitore = Sostenitore::factory()->create(['mobile' => null]);
+
+    expect($sostenitore->mobile)->toBeNull();
+});
+
+test('sostenitore ha molte adesioni', function () {
+    $livello = \App\Models\Livello::create([
+        'nome'              => 'Base',
+        'importo_suggerito' => 1000,
+        'is_active'         => true,
+    ]);
+    $sostenitore = Sostenitore::factory()->create();
+
+    \App\Models\Adesione::create([
+        'sostenitore_id' => $sostenitore->id,
+        'livello_id'     => $livello->id,
+        'anno'           => now()->year,
+        'stato'          => \App\Enums\StatoAdesione::Attiva,
+    ]);
+    \App\Models\Adesione::create([
+        'sostenitore_id' => $sostenitore->id,
+        'livello_id'     => $livello->id,
+        'anno'           => now()->year - 1,
+        'stato'          => \App\Enums\StatoAdesione::Scaduta,
+    ]);
+
+    expect($sostenitore->adesioni)->toHaveCount(2);
+});
