@@ -8,7 +8,11 @@ return [
     'safe_mode' => env('APP_ENV', 'local') === 'production',
 
     // Extra or specific configurations
-    'config' => [],
+    // bot_name è necessario per far funzionare i comandi nei gruppi Telegram
+    // (Nutgram usa il nome per stripparare il suffisso @botname dal comando)
+    'config' => [
+        'bot_name' => env('TELEGRAM_BOT_USERNAME'),
+    ],
 
     // Set if the service provider should automatically load
     // handlers from /routes/telegram.php
