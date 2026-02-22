@@ -8,7 +8,7 @@ Gestionale per le adesioni annuali di un'associazione no-profit. Permette di ges
 - **Livelli di adesione** — livelli configurabili con importo suggerito (Base, Pro, Avanzato, Eterno)
 - **Adesioni** — una per sostenitore per anno, con stati: attiva, pagamento pendente, scaduta, annullata
 - **Tessere PDF** — generazione e invio via email di tessere personalizzate per livello
-- **Notifiche Telegram** — notifiche automatiche su nuovi sostenitori e modifiche, invio controllato da un bot
+- **Notifiche Telegram** — notifiche automatiche su nuovi sostenitori e modifiche
 - **Bot Telegram** — menu interattivo con report, ricerca sostenitori e accesso ristretto tramite chat ID
 - **Log attività** — tracciamento di login, creazioni, modifiche e invii tessera con dati old/new in JSON
 - **Pannello admin** — interfaccia FilamentPHP con impostazioni associazione, logo e configurazione Telegram
@@ -19,39 +19,9 @@ Gestionale per le adesioni annuali di un'associazione no-profit. Permette di ges
 |---|---|
 | Backend | PHP 8.4, Laravel 12 |
 | Admin UI | FilamentPHP v5, Livewire 4 |
-| Frontend | Tailwind CSS v4, Vite 7 |
+| Frontend | Tailwind CSS v4 |
 | Database | MySQL 8.0 |
 | Bot Telegram | Nutgram |
-| Infrastruttura | Docker, Nginx, s6-overlay |
-
-## Avvio con Docker
-
-```bash
-# Prima installazione
-./install-laravel.sh -if
-
-# Avvio
-./docker-up.sh -bd
-
-# Ferma
-docker-compose down
-```
-
-## Comandi utili
-
-```bash
-# Crea utente admin
-docker compose exec -u 1000:1000 app php artisan make:filament-user
-
-# Esegui migrazioni
-docker compose exec -u 1000:1000 app php artisan migrate
-
-# Avvia bot Telegram (sviluppo)
-docker compose exec -u 1000:1000 app php artisan nutgram:listen
-
-# Esegui i test
-docker compose exec -u 1000:1000 app php artisan test --compact
-```
 
 ## Configurazione `.env`
 
@@ -60,12 +30,11 @@ APP_NAME="Trasimeno Prog Levels"
 APP_ENV=local
 
 DB_CONNECTION=mysql
-DB_HOST=mysql
-DB_DATABASE=laravel
+DB_HOST=...
+DB_DATABASE=...
 
 TELEGRAM_TOKEN=...
 TELEGRAM_BOT_USERNAME=nome_del_bot
-TELEGRAM_LOG_CHANNEL=null
 
 MAIL_MAILER=smtp
 MAIL_FROM_ADDRESS=noreply@example.com
@@ -98,8 +67,3 @@ app/
 │   └── Middleware/       # AuthorizeChat
 └── Mail/                 # TesseraInviata
 ```
-
-## Accesso
-
-- Pannello admin: `https://{HOST}/admin`
-- Vite HMR (sviluppo): `https://{HOST}:5173`
