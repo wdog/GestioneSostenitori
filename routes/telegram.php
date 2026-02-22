@@ -4,9 +4,10 @@
 
 use App\Telegram\Commands\StartCommand;
 use App\Telegram\Menus\MainMenu;
-
+use App\Telegram\Middleware\AuthorizeChat;
 
 $bot->registerCommand(StartCommand::class);
 
 $bot->onCommand('menu', MainMenu::class)
-    ->description('Apri il menu principale');
+    ->description('Apri il menu principale')
+    ->middleware(AuthorizeChat::class);
