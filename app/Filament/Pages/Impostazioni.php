@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use UnitEnum;
 use BackedEnum;
 use Filament\Pages\Page;
 use App\Models\Impostazione;
@@ -26,6 +27,8 @@ class Impostazioni extends Page implements HasForms
     protected static ?string $title = 'Impostazioni';
 
     protected static ?int $navigationSort = 99;
+
+    protected static UnitEnum|string|null $navigationGroup = 'Amministrazione';
 
     public ?array $data = [];
 

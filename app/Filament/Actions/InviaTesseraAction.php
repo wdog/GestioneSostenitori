@@ -6,6 +6,8 @@ use App\Models\Adesione;
 use App\Mail\TesseraInviata;
 use Filament\Actions\Action;
 use App\Services\TesseraPdfService;
+use App\Services\ActivityLogService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Filament\Notifications\Notification;
 
@@ -36,6 +38,18 @@ class InviaTesseraAction extends Action
                 }
 
                 Mail::to($record->sostenitore->email)->queue(new TesseraInviata($record));
+
+                ActivityLogService::log(
+                    'tessera.inviata',
+                    newData: [
+                        'sostenitore' => $record->sostenitore->fullName,
+                        'email'       => $record->sostenitore->email,
+                        'anno'        => $record->anno,
+                        'livello'     => $record->livello->nome,
+                        'codice'      => $record->codice_tessera,
+                    ],
+                    subject: Auth::user(),
+                );
 
                 Notification::make()
                     ->title('Email inviata')

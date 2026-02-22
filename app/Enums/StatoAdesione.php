@@ -13,6 +13,14 @@ enum StatoAdesione: string implements HasColor, HasIcon, HasLabel
     case Scaduta           = 'scaduta';
     case Annullata         = 'annullata';
 
+    public static function pagate(): array
+    {
+        return [
+            self::Attiva,
+            self::Scaduta,
+        ];
+    }
+
     public function getLabel(): string
     {
         return match ($this) {
@@ -41,13 +49,5 @@ enum StatoAdesione: string implements HasColor, HasIcon, HasLabel
             self::Scaduta           => 'heroicon-s-x-circle',
             self::Annullata         => 'heroicon-s-x-circle',
         };
-    }
-
-    public static function pagate(): array
-    {
-        return [
-            self::Attiva,
-            self::Scaduta,
-        ];
     }
 }

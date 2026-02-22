@@ -23,14 +23,6 @@ class MainMenu extends InlineMenu
     protected ?string $description = 'Apri il menu principale';
 
     /**
-     * Bottone condiviso per tornare al menu principale.
-     */
-    private function indietroButton(): InlineKeyboardButton
-    {
-        return InlineKeyboardButton::make('← Indietro', callback_data: 'back@start');
-    }
-
-    /**
      * Mostra il menu principale con le azioni disponibili.
      */
     public function start(Nutgram $bot): void
@@ -190,5 +182,13 @@ class MainMenu extends InlineMenu
                 $this->indietroButton(),
             )
             ->showMenu();
+    }
+
+    /**
+     * Bottone condiviso per tornare al menu principale.
+     */
+    private function indietroButton(): InlineKeyboardButton
+    {
+        return InlineKeyboardButton::make('← Indietro', callback_data: 'back@start');
     }
 }

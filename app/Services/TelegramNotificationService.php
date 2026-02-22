@@ -15,70 +15,9 @@ use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
 
 class TelegramNotificationService
 {
-    protected function bot(): Nutgram
-    {
-        return app(Nutgram::class);
-    }
-
     public function isEnabled(): bool
     {
         return (bool) Impostazione::get('telegram_notifications_enabled', false);
-    }
-
-    /**
-     * @return array<string>
-     */
-    protected function getRecipients(): array
-    {
-        $recipients = [];
-
-        $groupChatId = Impostazione::get('telegram_group_chat_id');
-        if ($groupChatId) {
-            $recipients[] = $groupChatId;
-        }
-
-        $userChatIds = User::query()
-            ->whereNotNull('telegram_chat_id')
-            ->where('telegram_chat_id', '!=', '')
-            ->where('telegram_notifications_enabled', true)
-            ->pluck('telegram_chat_id')
-            ->all();
-
-        return array_unique(array_merge($recipients, $userChatIds));
-    }
-
-    protected function send(string $message, $parse_mode = ParseMode::HTML): void
-    {
-        if ( ! $this->isEnabled()) {
-            return;
-        }
-
-        Log::debug('Telegram notification enabled!');
-
-        $recipients = $this->getRecipients();
-
-        if (empty($recipients)) {
-            return;
-        }
-
-        Log::debug('Telegram notification with recipients: ' . implode(', ', $recipients));
-
-        foreach ($recipients as $chatId) {
-            try {
-                $this->bot()->sendMessage(
-                    text: $message,
-                    chat_id: $chatId,
-                    parse_mode: $parse_mode,
-                );
-            } catch (\Throwable $e) {
-                Log::warning("Telegram notification failed for chat {$chatId}: {$e->getMessage()}");
-            }
-        }
-    }
-
-    protected function nomeAssociazione(): string
-    {
-        return Impostazione::getNomeAssociazione();
     }
 
     public function notifyNuovoSostenitore(Sostenitore $sostenitore): void
@@ -220,5 +159,66 @@ class TelegramNotificationService
             text: $text,
             parse_mode: ParseMode::MARKDOWN
         );
+    }
+
+    protected function bot(): Nutgram
+    {
+        return app(Nutgram::class);
+    }
+
+    /**
+     * @return array<string>
+     */
+    protected function getRecipients(): array
+    {
+        $recipients = [];
+
+        $groupChatId = Impostazione::get('telegram_group_chat_id');
+        if ($groupChatId) {
+            $recipients[] = $groupChatId;
+        }
+
+        $userChatIds = User::query()
+            ->whereNotNull('telegram_chat_id')
+            ->where('telegram_chat_id', '!=', '')
+            ->where('telegram_notifications_enabled', true)
+            ->pluck('telegram_chat_id')
+            ->all();
+
+        return array_unique(array_merge($recipients, $userChatIds));
+    }
+
+    protected function send(string $message, $parse_mode = ParseMode::HTML): void
+    {
+        if ( ! $this->isEnabled()) {
+            return;
+        }
+
+        Log::debug('Telegram notification enabled!');
+
+        $recipients = $this->getRecipients();
+
+        if (empty($recipients)) {
+            return;
+        }
+
+        Log::debug('Telegram notification with recipients: ' . implode(', ', $recipients));
+
+        foreach ($recipients as $chatId) {
+            try {
+                $this->bot()->sendMessage(
+                    text: $message,
+                    chat_id: $chatId,
+                    parse_mode: $parse_mode,
+                );
+            } catch (\Throwable $e) {
+                Log::warning("Telegram notification failed for chat {$chatId}: {$e->getMessage()}");
+            }
+        }
+    }
+
+    protected function nomeAssociazione(): string
+    {
+        return Impostazione::getNomeAssociazione();
     }
 }

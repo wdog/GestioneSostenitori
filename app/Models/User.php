@@ -37,6 +37,12 @@ class User extends Authenticatable implements FilamentUser
         'remember_token',
     ];
 
+    /** {@inheritDoc} */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -49,11 +55,5 @@ class User extends Authenticatable implements FilamentUser
             'password'                       => 'hashed',
             'telegram_notifications_enabled' => 'boolean',
         ];
-    }
-
-    /** {@inheritDoc} */
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return true;
     }
 }

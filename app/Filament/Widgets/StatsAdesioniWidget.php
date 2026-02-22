@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Adesione;
+use App\Enums\StatoAdesione;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -23,12 +24,12 @@ class StatsAdesioniWidget extends StatsOverviewWidget
 
         $incassato = Adesione::query()
             ->where('anno', $anno)
-            ->whereIn('stato', [\App\Enums\StatoAdesione::Attiva, \App\Enums\StatoAdesione::Scaduta])
+            ->whereIn('stato', [StatoAdesione::Attiva, StatoAdesione::Scaduta])
             ->sum('importo_versato') / 100;
 
         $pending = Adesione::query()
             ->where('anno', $anno)
-            ->whereNotIn('stato', [\App\Enums\StatoAdesione::Attiva, \App\Enums\StatoAdesione::Scaduta])
+            ->whereNotIn('stato', [StatoAdesione::Attiva, StatoAdesione::Scaduta])
             ->sum('importo_versato') / 100;
 
         return [
